@@ -52,13 +52,16 @@ Hands-on teaching tool with draggable clock hands and audio feedback.
 - **Graphics**: SVG-based analog clock rendering
 - **Audio**: Web Speech API for text-to-speech
 - **Storage**: localStorage for progress tracking
-- **Responsive**: CSS Grid, Flexbox, mobile-first design
+- **Layout**: CSS Grid desktop layout with responsive mobile overlay
+- **Responsive**: Mobile-first design with desktop docked sidebar
 
 ### **Architecture**
 - **State Management**: Centralized JavaScript state object
 - **Rendering**: 60fps smooth animations using requestAnimationFrame
 - **Event Handling**: Modern event delegation and touch support
 - **Performance**: Efficient DOM updates and CSS transforms
+- **Layout System**: CSS Grid for desktop (>=980px), overlay for mobile
+- **Interaction**: Intent-First drag modes (Independent vs Snapped)
 
 ### **Educational Features**
 - **Progress Tracking**: localStorage persistence across sessions
@@ -145,11 +148,12 @@ Open `index.html` directly or serve locally (e.g., `python3 -m http.server` or `
 ## ✅ Deployment Status - PRODUCTION LIVE
 
 ### **Current Infrastructure**
-- **Domain**: [showmetime.com](https://showmetime.com)
+- **Domain**: [showmetime.com](https://showmetime.com) + [www.showmetime.com](https://www.showmetime.com)
 - **Hosting**: AWS S3 static website (`showmetime-app` bucket)
 - **CDN**: CloudFront distribution (`E2XEFDPIL51W7E`)
-- **SSL**: AWS Certificate Manager (ACM)
-- **DNS**: Namecheap domain with AWS Route 53 nameservers
+- **SSL**: AWS Certificate Manager (ACM) with full HTTPS
+- **DNS**: AWS Route 53 hosted zone (`Z05885673K6JHREDSC7RY`)
+- **Verification**: Google Search Console verified
 
 ### **Deployment Pipeline**
 ```bash

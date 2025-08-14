@@ -272,17 +272,27 @@ aws cloudfront create-invalidation --distribution-id E2XEFDPIL51W7E --paths "/*"
 
 ## 🆘 Quick Reference
 
-### Current IDs
-- **AdSense**: `ca-pub-4892840738780526`
+### Current IDs - ALL CONFIGURED
+- **AdSense**: `ca-pub-4892840738780526` / Slot `7362573906`
 - **Clarity**: `sujuzoxojp`
-- **GA4**: `G-XXXXXXXXXX` (needs setup)
+- **GA4**: `G-2QWTP53NMH`
 - **CloudFront**: `E2XEFDPIL51W7E`
 - **S3 Bucket**: `showmetime-app`
+- **Route 53 Zone**: `Z05885673K6JHREDSC7RY`
 
-### URLs
+### URLs - PRODUCTION LIVE
 - **Live Site**: https://showmetime.com
+- **WWW**: https://www.showmetime.com
 - **Privacy**: https://showmetime.com/privacy.html
 - **Terms**: https://showmetime.com/terms.html
+
+### DNS Configuration
+- **Domain**: showmetime.com (Namecheap)
+- **Nameservers**: AWS Route 53
+- **DNS Records**: 
+  - A: showmetime.com → CloudFront
+  - A: www.showmetime.com → CloudFront  
+  - TXT: google-site-verification=fvw0SvDl1koAq9j82uoW-84bkZ0H0ymGTV5W7ZDwvBc
 
 ## 📱 Mobile Optimization (COMPLETED)
 
