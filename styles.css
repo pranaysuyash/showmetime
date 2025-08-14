@@ -47,19 +47,43 @@ body {
   margin: 0;
 }
 
-.segmented-group { display: inline-flex; gap: 8px; }
+.segmented-group { display: inline-flex; gap: 4px; }
 .segmented {
   border: 1px solid rgba(255,255,255,0.12);
   color: var(--text);
   background: rgba(255,255,255,0.04);
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+  min-width: 44px; /* Ensure touch-friendly size */
+  text-align: center;
 }
+
+.segmented:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-1px);
+}
+
 .segmented--active {
-  background: linear-gradient(180deg, rgba(94,176,239,0.18), rgba(94,176,239,0.05));
-  border-color: rgba(94,176,239,0.5);
-  box-shadow: 0 0 0 6px var(--ring);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(94,176,239,0.3);
+}
+
+.segmented--active::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-radius: 10px;
+  z-index: -1;
+  opacity: 0.2;
 }
 
 .icon-btn {
@@ -118,22 +142,28 @@ body {
   position: fixed;
   right: 16px;
   top: 72px;
-  width: min(380px, 90vw);
+  width: min(400px, 92vw);
   max-height: calc(100vh - 96px);
   overflow: auto;
-  padding: 12px;
-  background: linear-gradient(180deg, rgba(22,28,50,0.9), rgba(14,18,32,0.9));
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(22,28,50,0.95), rgba(14,18,32,0.95));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
   transform-origin: 100% 0;
-  transform: scale(0.98) translateY(-6px);
+  transform: scale(0.9) translateY(-10px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   z-index: 30;
 }
-.controls.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+
+.controls.open { 
+  opacity: 1; 
+  transform: scale(1) translateY(0); 
+  pointer-events: auto; 
+}
 .controls__header {
   display: flex;
   align-items: center;
@@ -177,8 +207,66 @@ body.theme-sunset { --bg: #1b0d0b; --panel: #2a1412; --text: #fff2e7; --muted: #
 body.theme-slate { --bg: #0b0f14; --panel: #131922; --text: #e8eef5; --muted: #9aa8b5; --accent: #7dd3fc; --accent-2: #38bdf8; --danger: #f87171; --ring: rgba(125,211,252,0.3); }
 body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcfcf; --accent: #00e5ff; --accent-2: #00ffa3; --danger: #ff1a1a; --ring: rgba(0,229,255,0.3); }
 
-/* Accessibility focus */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Accessibility improvements */
+:focus-visible { 
+  outline: 2px solid var(--accent); 
+  outline-offset: 2px; 
+  border-radius: 4px;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  :root {
+    --bg: #000;
+    --panel: #111;
+    --text: #fff;
+    --muted: #ccc;
+    --accent: #00ff00;
+    --accent-2: #00ffff;
+    --danger: #ff0000;
+    --success: #00ff00;
+    --warning: #ffff00;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus indicators for interactive elements */
+.lesson-btn:focus-visible,
+.quiz-option:focus-visible,
+.game-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Better keyboard navigation */
+.segmented:focus-visible {
+  z-index: 1;
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+/* Screen reader helpers */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
 
 /* Small screens adjustments */
 @media (max-width: 560px) {
@@ -232,23 +320,53 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   align-items: center;
   gap: 8px;
   padding: 16px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  border: 2px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.05);
   color: var(--text);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 100px;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  min-height: 110px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lesson-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.02));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .lesson-btn:hover {
   background: rgba(255,255,255,0.08);
-  transform: translateY(-2px);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.lesson-btn:hover::before {
+  opacity: 1;
 }
 
 .lesson-btn.completed {
   border-color: var(--success);
-  background: rgba(34, 197, 94, 0.1);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+
+.lesson-btn.selected {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(94, 176, 239, 0.2), rgba(94, 176, 239, 0.05));
+  box-shadow: 0 4px 15px rgba(94, 176, 239, 0.3);
+  transform: translateY(-2px);
+}
+
+.lesson-btn.completed.selected {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(94, 176, 239, 0.1));
 }
 
 .lesson-icon {
@@ -269,21 +387,77 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
 
 .tutorial-content {
   margin: 20px 0;
-  padding: 16px;
-  background: rgba(255,255,255,0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  min-height: 60px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  min-height: 80px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.tutorial-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  opacity: 0.8;
 }
 
 .tutorial-content.active {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .tutorial-step {
   text-align: center;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.tutorial-step strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.lesson-preview {
+  text-align: center;
+}
+
+.lesson-preview h4 {
+  color: var(--accent);
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.lesson-preview p {
+  color: var(--text);
+  margin: 0 0 16px 0;
   line-height: 1.6;
+}
+
+.lesson-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: rgba(255,255,255,0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .lesson-controls {
@@ -459,18 +633,47 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
 
 /* Button Styles */
 .btn {
-  padding: 8px 12px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.05);
   color: var(--text);
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-size: 14px;
+  position: relative;
+  overflow: hidden;
+  min-height: 44px; /* Touch-friendly */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .btn:hover {
   background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
 }
 
 .btn--primary {
@@ -478,11 +681,16 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   border: none;
   color: white;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(94, 176, 239, 0.2);
 }
 
 .btn--primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(94, 176, 239, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(94, 176, 239, 0.4);
+}
+
+.btn--primary::before {
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 
 /* Achievement Toast */
@@ -637,6 +845,28 @@ body:not(.ads-on) .content {
 }
 
 /* Responsive adjustments */
+@media (max-width: 768px) {
+  .toolbar__center {
+    gap: 2px;
+  }
+  
+  .segmented {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: 40px;
+  }
+  
+  .controls {
+    width: min(350px, 95vw);
+    right: 8px;
+    top: 64px;
+  }
+  
+  .clock-wrapper {
+    width: min(85vmin, 300px);
+  }
+}
+
 @media (max-width: 560px) {
   .lesson-grid {
     grid-template-columns: 1fr;
@@ -666,6 +896,40 @@ body:not(.ads-on) .content {
     font-size: 10px;
     gap: 6px;
     padding: 0 10px;
+  }
+  
+  .toolbar__center {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .segmented {
+    padding: 8px 6px;
+    font-size: 11px;
+    min-width: 35px;
+  }
+  
+  .brand {
+    font-size: 14px;
+  }
+  
+  .controls {
+    width: 100vw;
+    right: 0;
+    left: 0;
+    top: 56px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    max-height: calc(100vh - 56px);
+  }
+}
+
+@media (max-width: 390px) {
+  .toolbar__center .segmented {
+    padding: 6px 4px;
+    font-size: 10px;
+    min-width: 30px;
   }
 }
 

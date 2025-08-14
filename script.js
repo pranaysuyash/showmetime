@@ -410,12 +410,33 @@
     const sections = Array.from(controlsPanel.querySelectorAll('.panel'));
     sections.forEach((s) => {
       const m = s.getAttribute("data-for-mode");
-      s.style.display = m === state.mode ? "grid" : "none";
+      const isActive = m === state.mode;
+      s.style.display = isActive ? "grid" : "none";
+      
+      // Add smooth transition for panel switching
+      if (isActive) {
+        s.style.opacity = "0";
+        s.style.transform = "translateY(10px)";
+        setTimeout(() => {
+          s.style.opacity = "1";
+          s.style.transform = "translateY(0)";
+          s.style.transition = "all 0.3s ease";
+        }, 50);
+      }
     });
-    if (state.mode === "interactive") {
+    
+    // Handle digital display based on mode
+    if (state.mode === "interactive" || state.mode === "learn" || state.mode === "quiz") {
       digitalEl.style.display = "none";
+      timezoneEl.style.display = "none";
     } else {
       digitalEl.style.display = state.showDigital ? "block" : "none";
+      timezoneEl.style.display = "block";
+    }
+    
+    // Auto-close controls on mobile when switching modes
+    if (window.innerWidth <= 560) {
+      setTimeout(() => toggleControls(false), 1000);
     }
   }
 
@@ -750,9 +771,25 @@
       btn.classList.toggle('selected', btn.dataset.lesson === lessonId);
     });
     
-    tutorialContent.innerHTML = '';
+    // Show lesson preview
+    const lesson = LESSONS[lessonId];
+    if (lesson) {
+      tutorialContent.innerHTML = `
+        <div class="lesson-preview">
+          <h4>${lesson.title}</h4>
+          <p>This lesson will teach you about ${lesson.title.toLowerCase()}. Click "Start Lesson" to begin!</p>
+          <div class="lesson-stats">
+            <span class="stat-item">📚 ${lesson.steps.length} steps</span>
+            <span class="stat-item">⭐ ${state.learning.progress[lessonId] || 0}/3 stars</span>
+          </div>
+        </div>
+      `;
+      tutorialContent.classList.add('active');
+    }
+    
     btnStartLesson.style.display = 'inline-block';
     btnNextStep.style.display = 'none';
+    btnRepeat.style.display = 'none';
   }
 
   function startCurrentLesson() {
@@ -1122,37 +1159,81 @@
 
   function playSound(type) {
     // Simple audio feedback using Web Audio API
-    if (!window.AudioContext && !window.webkitAudioContext) return;
-    
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    switch (type) {
-      case 'success':
-        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-        break;
-      case 'error':
-        oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3
-        oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.1); // G3
-        break;
-      case 'achievement':
-        oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
-        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1); // C5
-        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.2); // E5
-        break;
+    try {
+      if (!window.AudioContext && !window.webkitAudioContext) return;
+      
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Handle suspended audio context (Chrome requires user interaction)
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {
+          // Silently fail if audio can't be resumed
+        });
+      }
+      
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      switch (type) {
+        case 'success':
+          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+          break;
+        case 'error':
+          oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+          oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.1); // G3
+          break;
+        case 'achievement':
+          oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+          oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1); // C5
+          oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.2); // E5
+          break;
+        default:
+          return; // Unknown type, exit early
+      }
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.3);
+      
+      // Clean up after sound completes
+      setTimeout(() => {
+        try {
+          audioContext.close();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }, 500);
+      
+    } catch (error) {
+      // Silently fail for audio issues
+      console.debug('Audio playback failed:', error);
     }
-    
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.3);
   }
+
+  // Add error boundaries for critical functions
+  function safeExecute(fn, fallback = () => {}) {
+    try {
+      return fn();
+    } catch (error) {
+      console.error('Function execution failed:', error);
+      return fallback();
+    }
+  }
+
+  // Add global error handler for unhandled errors
+  window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    // Show user-friendly message for critical errors
+    if (event.error && event.error.message.includes('localStorage')) {
+      showFeedback('⚠️', 'Storage Error', 'Your progress may not be saved');
+    }
+  });
 
   // Init
   init();
