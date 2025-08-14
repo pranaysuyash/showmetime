@@ -304,6 +304,14 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") toggleControls(false);
     });
+    
+    // Handle window resize for desktop/mobile layout changes
+    window.addEventListener("resize", () => {
+      if (window.innerWidth >= 980) {
+        controlsPanel.classList.add("open");
+        toggleControlsBtn.setAttribute("aria-expanded", "true");
+      }
+    });
 
     modeBtns.forEach((b) => {
       b.addEventListener("click", () => {
@@ -403,9 +411,22 @@
     btnRandomTime.addEventListener("click", () => setInteractiveToRandom());
 
     updatePanelsForMode();
+    
+    // Ensure controls are visible on desktop from start
+    if (window.innerWidth >= 980) {
+      controlsPanel.classList.add("open");
+      toggleControlsBtn.setAttribute("aria-expanded", "true");
+    }
   }
 
   function toggleControls(open) {
+    // On desktop (>=980px), controls are always visible
+    if (window.innerWidth >= 980) {
+      controlsPanel.classList.add("open");
+      toggleControlsBtn.setAttribute("aria-expanded", "true");
+      return;
+    }
+    
     const next = open != null ? open : !controlsPanel.classList.contains("open");
     controlsPanel.classList.toggle("open", next);
     toggleControlsBtn.setAttribute("aria-expanded", String(next));
@@ -688,10 +709,16 @@
       const deg = angleFromPointer(e);
       const inter = state.interactive;
       if (type === "h") {
-        // snap to nearest hour marker
-        const hour = Math.round(deg / 30) % 12;
         const isPM = inter.time.h >= 12;
-        inter.time.h = hour + (isPM ? 12 : 0);
+        if (inter.dragMode === "snapped") {
+          // snap to nearest hour marker
+          const hour = Math.round(deg / 30) % 12;
+          inter.time.h = hour + (isPM ? 12 : 0);
+        } else {
+          // independent: continuous hour based on angle
+          const hour = (deg / 30) % 12;
+          inter.time.h = hour + (isPM ? 12 : 0);
+        }
       } else if (type === "m") {
         const minute = Math.round(deg / 6) % 60;
         inter.time.m = minute;
