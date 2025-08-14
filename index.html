@@ -6,17 +6,17 @@
     <title>TimeLab — Interactive Analog Clock for Kids and Everyone</title>
     <meta name="description" content="A beautiful, full-screen analog clock with digital display, multiple themes, timezones, and an interactive teaching mode to help kids learn to tell time." />
     <meta name="keywords" content="analog clock, interactive clock, kids clock, learn time, teaching time, timezone clock, 12 hour, 24 hour, educational" />
-    <link rel="canonical" href="https://example.com/" />
+    <link rel="canonical" href="https://showmetime.com/" />
     <meta name="theme-color" content="#0b1020" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="TimeLab — Interactive Analog Clock" />
     <meta property="og:description" content="Full-screen analog clock with interactive teaching mode, themes, and timezone support." />
-    <meta property="og:url" content="https://example.com/" />
-    <meta property="og:image" content="https://example.com/og-image.png" />
+    <meta property="og:url" content="https://showmetime.com/" />
+    <meta property="og:image" content="https://showmetime.com/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="TimeLab — Interactive Analog Clock" />
     <meta name="twitter:description" content="Teach and explore time: analog and digital, themes, timezones, and interactive controls." />
-    <meta name="twitter:image" content="https://example.com/og-image.png" />
+    <meta name="twitter:image" content="https://showmetime.com/og-image.png" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230b1020' stroke='%235eb0ef' stroke-width='4'/%3E%3Cline x1='50' y1='50' x2='50' y2='20' stroke='%23e7ecff' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='50' y1='50' x2='80' y2='50' stroke='%235eb0ef' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
     <!-- Google Funding Choices (Consent Management Platform) -->
     <script async src="https://fundingchoicesmessages.google.com/i/pub-4892840738780526?ers=1" nonce="ABCDEFGHIJKLMNOPQRSTUVWXYZ123456"></script>
@@ -61,7 +61,7 @@
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "TimeLab — Interactive Analog Clock",
-        "url": "https://example.com/",
+        "url": "https://showmetime.com/",
         "applicationCategory": "EducationalApplication",
         "description": "A full-screen analog clock with interactive teaching tools, themes, and timezone support.",
         "operatingSystem": "Web",
@@ -83,7 +83,7 @@
         <button class="segmented" data-mode="interactive" role="tab" aria-selected="false">Interactive</button>
         <button class="segmented" data-mode="learn" role="tab" aria-selected="false">Learn</button>
         <button class="segmented" data-mode="quiz" role="tab" aria-selected="false">Quiz</button>
-        <button class="segmented" data-mode="games" role="tab" aria-selected="false">Games</button>
+        <button class="segmented" data-mode="games" role="tab" aria-selected="false" style="display: none;">Games</button>
       </div>
       <div class="toolbar__right">
         <button id="toggleControls" class="icon-btn" aria-haspopup="dialog" aria-expanded="true" aria-controls="controlsPanel" title="Settings" aria-label="Open settings">
@@ -157,7 +157,7 @@
               </div>
             </div>
             <label class="row"><input type="checkbox" id="iSpotlight" checked /> Spotlight on drag</label>
-            <div class="row gap">
+            <div class="action-buttons">
               <button id="btnReadTime" class="btn">Read time aloud</button>
               <button id="btnSetNow" class="btn">Set to now</button>
               <button id="btnRandomTime" class="btn">Random time</button>
@@ -300,21 +300,34 @@
         </div>
       </div>
 
-      <aside id="adBanner" class="ad-banner" aria-label="Advertisement">
-        <div class="ad-banner__inner">
-          <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4892840738780526" data-ad-slot="7362573906" data-ad-format="auto" data-full-width-responsive="true"></ins>
-          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-        </div>
-      </aside>
     </main>
 
     <footer class="footer">
-      <div class="footer-links">
-        <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
-        <span>•</span>
-        <a href="/terms.html" target="_blank" rel="noopener">Terms of Service</a>
-        <span>•</span>
-        <span>© 2024 TimeLab - Educational Clock Learning</span>
+      <div class="footer-content">
+        <aside id="adBanner" class="ad-banner" aria-label="Advertisement">
+          <div class="ad-banner__inner">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4892840738780526" data-ad-slot="7362573906" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>
+              (adsbygoogle = window.adsbygoogle || []).push({});
+              // Show ad banner only when ads are loaded
+              setTimeout(() => {
+                const adElements = document.querySelectorAll('.adsbygoogle');
+                adElements.forEach(ad => {
+                  if (ad.innerHTML.trim() !== '') {
+                    document.getElementById('adBanner').classList.add('loaded');
+                  }
+                });
+              }, 2000); // Check after 2 seconds
+            </script>
+          </div>
+        </aside>
+        <div class="footer-links">
+          <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+          <span>•</span>
+          <a href="/terms.html" target="_blank" rel="noopener">Terms of Service</a>
+          <span>•</span>
+          <span>© 2024 TimeLab - Educational Clock Learning</span>
+        </div>
       </div>
     </footer>
 

@@ -239,11 +239,11 @@
     });
     clockSvg.appendChild(outerRing);
 
-    // Hour markers
+    // Hour and minute markers - ALL positions including behind numbers
     const ticks = createSVGElement("g", { id: "ticks" });
     for (let i = 0; i < 60; i++) {
       const angle = (i / 60) * 2 * Math.PI;
-      const isHour = i % 5 === 0;
+      const isHour = i % 5 === 0; // Every 5 minutes (including hour positions)
       const rOuter = 180;
       const rInner = isHour ? 162 : 172;
       
@@ -262,6 +262,30 @@
       ticks.appendChild(tick);
     }
     clockSvg.appendChild(ticks);
+
+    // Add specific tick marks at NUMBER positions (12, 1, 2, 3, etc.)
+    const numberTicks = createSVGElement("g", { id: "number-ticks" });
+    for (let hour = 1; hour <= 12; hour++) {
+      const angle = (hour / 12) * 2 * Math.PI;
+      const rOuter = 185;
+      const rInner = 160;
+      
+      const x1 = 200 + rInner * Math.sin(angle);
+      const y1 = 200 - rInner * Math.cos(angle);
+      const x2 = 200 + rOuter * Math.sin(angle);
+      const y2 = 200 - rOuter * Math.cos(angle);
+      
+      const tick = createSVGElement("line", {
+        x1, y1, x2, y2,
+        stroke: "#ffffff",
+        "stroke-width": 4,
+        "stroke-linecap": "round",
+        class: "number-tick"
+      });
+      numberTicks.appendChild(tick);
+    }
+    clockSvg.appendChild(numberTicks);
+
 
     // Numbers
     const numbers = createSVGElement("g", { id: "numbers" });
@@ -478,6 +502,24 @@
       updateSecondFromAngle(angle);
     }
     
+    // In snapped mode, redraw all hands to maintain proper relationships
+    // In independent mode, only update the dragged hand
+    if (state.interactive.dragMode === "snapped") {
+      drawInteractiveTime();
+    } else {
+      // Independent mode - only update the specific hand being dragged, no linkage
+      if (dragState.type === "h") {
+        const hourAngle = angle; // Use raw angle, not calculated from time
+        setRotation(components.hourHand, hourAngle);
+      } else if (dragState.type === "m") {
+        const minuteAngle = angle; // Use raw angle, not calculated from time
+        setRotation(components.minuteHand, minuteAngle);
+      } else if (dragState.type === "s") {
+        const secondAngle = angle; // Use raw angle, not calculated from time
+        setRotation(components.secondHand, secondAngle);
+      }
+    }
+    
     if (state.interactive.spotlight) {
       updateSpotlight(angle);
     }
@@ -524,27 +566,47 @@
     const isPM = state.interactive.time.h >= 12;
     
     if (state.interactive.dragMode === "snapped") {
-      const hour = Math.round(angle / 30) % 12;
-      state.interactive.time.h = hour + (isPM ? 12 : 0);
+      let hour = Math.round(angle / 30) % 12;
+      if (hour === 0) hour = 12; // Handle 12 o'clock position
+      state.interactive.time.h = hour + (isPM && hour !== 12 ? 12 : 0);
       if (state.interactive.time.h === 24) state.interactive.time.h = 12;
     } else {
-      const hour = (angle / 30) % 12;
-      state.interactive.time.h = hour + (isPM ? 12 : 0);
+      let hour = (angle / 30) % 12;
+      if (hour < 0.1 && angle > 350) hour = 12; // Smooth 12 o'clock handling
+      state.interactive.time.h = hour + (isPM && hour < 12 ? 12 : 0);
     }
   }
 
-  // Update minute from angle
+  // Update minute from angle  
   function updateMinuteFromAngle(angle) {
+    const oldMinute = state.interactive.time.m;
+    
     if (state.interactive.dragMode === "snapped") {
-      state.interactive.time.m = Math.round(angle / 6) % 60;
+      let minute = Math.round(angle / 6) % 60;
+      if (minute < 0) minute += 60; // Handle negative wrap
+      
+      // Check for hour boundary crossing in snapped mode
+      if (oldMinute > 45 && minute < 15) {
+        // Crossed from 59 to 0 (forward) - advance hour
+        state.interactive.time.h = (state.interactive.time.h + 1) % 24;
+      } else if (oldMinute < 15 && minute > 45) {
+        // Crossed from 0 to 59 (backward) - go back hour
+        state.interactive.time.h = (state.interactive.time.h - 1 + 24) % 24;
+      }
+      
+      state.interactive.time.m = minute;
     } else {
-      state.interactive.time.m = (angle / 6) % 60;
+      let minute = (angle / 6) % 60;
+      if (minute < 0) minute += 60; // Handle negative wrap
+      state.interactive.time.m = minute;
     }
   }
 
   // Update second from angle
   function updateSecondFromAngle(angle) {
-    state.interactive.time.s = Math.round(angle / 6) % 60;
+    let second = Math.round(angle / 6) % 60;
+    if (second < 0) second += 60; // Handle negative wrap
+    state.interactive.time.s = second;
   }
 
   // Update spotlight
@@ -796,24 +858,15 @@
     updatePositionIndicators();
   }
 
-  // Render theme swatches
+  // Bind theme swatches events
   function renderThemeSwatches() {
-    const themeSwatches = document.getElementById('themeSwatches');
-    if (!themeSwatches) return;
+    const themeSelector = document.getElementById('themeSelector');
+    if (!themeSelector) return;
     
-    const themes = ['blue', 'mint', 'purple', 'sunset', 'slate', 'contrast'];
-    themeSwatches.innerHTML = '';
-    
-    themes.forEach(theme => {
-      const swatch = document.createElement('button');
-      swatch.className = 'swatch';
-      swatch.setAttribute('aria-label', `${theme} theme`);
-      swatch.style.background = getThemeGradient(theme);
-      swatch.dataset.theme = theme;
-      
-      if (theme === state.theme) {
-        swatch.setAttribute('aria-selected', 'true');
-      }
+    // Bind click events to existing swatch buttons
+    const swatches = themeSelector.querySelectorAll('.swatch');
+    swatches.forEach(swatch => {
+      const theme = swatch.dataset.theme;
       
       swatch.addEventListener('click', (e) => {
         e.preventDefault();
@@ -822,18 +875,22 @@
         console.log('Theme clicked:', theme); // Debug log
         state.theme = theme;
         document.body.className = `theme-${theme}`;
-        applyTheme(theme);
+        applyTheme(theme); // Apply theme to clock colors
         
         // Update swatch selection
-        themeSwatches.querySelectorAll('.swatch').forEach(s => {
+        swatches.forEach(s => {
           s.setAttribute('aria-selected', s === swatch ? 'true' : 'false');
         });
         
         saveState();
       });
-      
-      themeSwatches.appendChild(swatch);
     });
+    
+    // Set initial selection
+    const currentSwatch = themeSelector.querySelector(`[data-theme="${state.theme}"]`);
+    if (currentSwatch) {
+      currentSwatch.setAttribute('aria-selected', 'true');
+    }
   }
 
   // Get theme gradient
@@ -912,6 +969,35 @@
     if (cap) {
       cap.setAttribute('fill', colors.primary);
     }
+    
+    // Update clock face border
+    const face = clockSvg.querySelector('.clock-face');
+    if (face) {
+      face.setAttribute('stroke', colors.primary);
+    }
+    
+    // Update outer ring
+    const outerRing = clockSvg.querySelector('circle[stroke-dasharray]');
+    if (outerRing) {
+      outerRing.setAttribute('stroke', colors.secondary);
+    }
+    
+    // Update hour markers  
+    const hourTicks = clockSvg.querySelectorAll('#ticks line[stroke-width="3"]');
+    hourTicks.forEach(tick => {
+      tick.setAttribute('stroke', colors.primary);
+    });
+    
+    // Update number position ticks - keep them white for visibility like the hands
+    const numberTicks = clockSvg.querySelectorAll('.number-tick');
+    numberTicks.forEach(tick => {
+      tick.setAttribute('stroke', 'white');
+    });
+    
+    // Update interactive indicator
+    if (components.interactiveIndicator) {
+      components.interactiveIndicator.setAttribute('stroke', colors.secondary);
+    }
   }
 
   // Update panels for mode
@@ -922,9 +1008,18 @@
       panel.style.display = forMode === state.mode ? 'block' : 'none';
     });
     
-    // Update interactive indicator
+    // Update interactive indicator - show for interactive and learn modes
     if (components.interactiveIndicator) {
-      components.interactiveIndicator.setAttribute('opacity', state.mode === 'interactive' ? '0.3' : '0');
+      const showIndicator = state.mode === 'interactive' || state.mode === 'learn';
+      components.interactiveIndicator.setAttribute('opacity', showIndicator ? '0.3' : '0');
+    }
+    
+    // Enable dragging in both interactive and learn modes
+    if (components.hourHand && components.minuteHand && components.secondHand) {
+      const enableDragging = state.mode === 'interactive' || state.mode === 'learn';
+      [components.hourHand, components.minuteHand, components.secondHand].forEach(hand => {
+        hand.style.pointerEvents = enableDragging ? 'stroke' : 'none';
+      });
     }
     
     // Update hand visibility
@@ -1104,6 +1199,29 @@
   // Set hand rotation
   function setRotation(element, angle) {
     if (!element) return;
+    
+    // Normalize angle to 0-360 range
+    angle = ((angle % 360) + 360) % 360;
+    
+    // Get current rotation to check for jumps
+    const currentTransform = element.getAttribute('transform') || 'rotate(0 200 200)';
+    const currentAngleMatch = currentTransform.match(/rotate\(([^)]+) 200 200\)/);
+    
+    if (currentAngleMatch) {
+      const currentAngle = parseFloat(currentAngleMatch[1]);
+      const angleDiff = Math.abs(angle - currentAngle);
+      
+      // If the angle difference is large (>180°), we might be crossing 12 o'clock
+      // Choose the shorter rotation path
+      if (angleDiff > 180) {
+        if (angle > currentAngle) {
+          angle -= 360;
+        } else {
+          angle += 360;
+        }
+      }
+    }
+    
     element.setAttribute('transform', `rotate(${angle} 200 200)`);
   }
 

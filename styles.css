@@ -197,6 +197,16 @@ body::after {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.brand::before {
+  content: "🕐";
+  font-size: 24px;
+  -webkit-text-fill-color: initial;
+  background: none;
 }
 
 /* Main Content */
@@ -527,6 +537,8 @@ input[type="checkbox"] {
   gap: var(--space-sm);
   user-select: none;
   touch-action: manipulation;
+  flex: 1; /* Make buttons same width in container */
+  min-width: 120px; /* Ensure minimum consistent width */
 }
 
 .btn:hover {
@@ -567,10 +579,11 @@ input[type="checkbox"] {
   padding: 2px;
   background: var(--panel-glass);
   border-radius: var(--space-sm);
+  border: 1px solid var(--border);
 }
 
 .segmented {
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -579,20 +592,24 @@ input[type="checkbox"] {
   border-radius: var(--space-xs);
   cursor: pointer;
   transition: all var(--transition-fast);
-  min-height: 36px;
+  min-height: 40px; /* Consistent with other buttons */
   white-space: nowrap;
   user-select: none;
   touch-action: manipulation;
+  flex: 1; /* Equal width segments */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .segmented:hover {
   background: rgba(255, 255, 255, 0.1);
   color: var(--text);
-  transform: scale(1.02);
+  transform: translateY(-1px);
 }
 
 .segmented:active {
-  transform: scale(0.98);
+  transform: translateY(1px);
   transition-duration: 50ms;
 }
 
@@ -605,12 +622,13 @@ input[type="checkbox"] {
 
 .segmented--active:hover {
   background: var(--accent-light);
+  transform: translateY(-1px);
 }
 
 /* Icon Button */
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px; /* Consistent with button height */
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -620,29 +638,47 @@ input[type="checkbox"] {
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--transition-fast);
+  user-select: none;
+  touch-action: manipulation;
 }
 
 .icon-btn:hover {
   background: var(--accent);
   color: white;
-  transform: rotate(180deg);
+  transform: translateY(-1px) rotate(90deg);
+  box-shadow: var(--shadow-md);
+}
+
+.icon-btn:active {
+  transform: translateY(1px) rotate(90deg);
+  transition-duration: 50ms;
 }
 
 /* Select */
 .select {
   width: 100%;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background: var(--panel-glass);
   border: 1px solid var(--border);
   border-radius: var(--space-xs);
   color: var(--text);
   font-size: var(--text-sm);
+  font-weight: 500;
   cursor: pointer;
+  min-height: 44px; /* Consistent height */
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.select:hover {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .select:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(79, 127, 255, 0.2);
 }
 
 /* Theme Selector */
@@ -693,6 +729,20 @@ input[type="checkbox"] {
   margin-top: var(--space-lg);
 }
 
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+
+.action-buttons .btn {
+  width: 100%; /* Force all buttons to same width */
+  flex: none; /* Override flex: 1 from general .btn */
+  min-width: auto; /* Remove min-width constraint */
+}
+
 /* Learning Components */
 .progress-card {
   background: var(--panel-glass);
@@ -737,12 +787,26 @@ input[type="checkbox"] {
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: center;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  touch-action: manipulation;
 }
 
 .lesson-btn:hover {
-  background: rgba(79, 127, 255, 0.1);
+  background: var(--accent);
   border-color: var(--accent);
-  transform: translateY(-2px);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.lesson-btn:active {
+  transform: translateY(1px);
+  transition-duration: 50ms;
 }
 
 .lesson-btn.selected {
@@ -1173,40 +1237,131 @@ input[type="checkbox"] {
   }
 }
 
-/* Toggle Button - Hide on Desktop */
+/* Toggle Button - Always Show */
 #toggleControls {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--space-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+#toggleControls:hover {
+  background: var(--accent);
+  color: white;
+  transform: rotate(90deg);
+  box-shadow: 0 0 15px rgba(79, 127, 255, 0.4);
 }
 
 @media (min-width: 980px) {
   #toggleControls {
-    display: none !important;
+    display: none !important; /* Hide on desktop where sidebar is always open */
   }
 }
 
-/* Ad Banner */
+/* Ad Banner - Hidden by default until ads load */
 .ad-banner {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: var(--space-sm);
-  z-index: 50;
-  backdrop-filter: blur(20px);
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--space-sm);
+  padding: var(--space-md);
+  margin: var(--space-lg) 0;
+  display: none; /* Hidden until ads are loaded */
+}
+
+.ad-banner.loaded {
+  display: block;
 }
 
 .ad-banner__inner {
-  max-width: 728px;
-  margin: 0 auto;
+  text-align: center;
 }
 
 @media (max-width: 768px) {
   .ad-banner {
-    position: relative;
-    margin: var(--space-lg) 0 0;
+    margin: var(--space-md) 0;
+    padding: var(--space-sm);
   }
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  z-index: 40;
+  padding: var(--space-xs) var(--space-md);
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-xs);
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 980px) {
+  .footer {
+    /* Footer aligns with clock area, sidebar extends full height */
+    left: 0;
+    right: var(--sidebar-width);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-links {
+    font-size: 10px;
+    gap: var(--space-xs);
+  }
+  .footer {
+    padding: 4px var(--space-sm);
+  }
+}
+
+/* Ad Banner in Footer */
+.ad-banner {
+  display: none; /* Hidden until ads are loaded */
+  width: 100%;
+  max-width: 728px;
+  margin: 0 auto var(--space-xs);
+}
+
+.ad-banner.loaded {
+  display: block;
+}
+
+.ad-banner__inner {
+  text-align: center;
 }
 
 /* Hidden Utility */
