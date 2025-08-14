@@ -32,23 +32,12 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      // Consent Mode V2 - Set defaults for EU/EEA regions only
+      // Consent Mode V2 - Set defaults before config
       gtag('consent', 'default', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
-        'functionality_storage': 'granted',
-        'security_storage': 'granted',
-        'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH']
-      });
-      
-      // Default to granted for non-EU regions
-      gtag('consent', 'default', {
-        'analytics_storage': 'granted',
-        'ad_storage': 'granted',
-        'ad_user_data': 'granted',
-        'ad_personalization': 'granted',
         'functionality_storage': 'granted',
         'security_storage': 'granted'
       });
@@ -56,13 +45,6 @@
       gtag('config', 'G-2QWTP53NMH', {
         'anonymize_ip': true,
         'cookie_flags': 'SameSite=Strict;Secure'
-      });
-
-      // Listen for Google Funding Choices consent updates
-      window.addEventListener('message', function(event) {
-        if (event.data && event.data.type === 'consent-update') {
-          gtag('consent', 'update', event.data.consent);
-        }
       });
     </script>
     
@@ -111,18 +93,15 @@
     </header>
 
     <main class="content" role="main">
-      <div id="clockWrapper" class="clock-wrapper">
-        <svg id="clockSvg" viewBox="0 0 400 400" role="img" aria-label="Analog clock" focusable="false"></svg>
-        <div id="digital" class="digital" aria-live="polite"></div>
-        <div id="timezoneLabel" class="timezone" aria-live="polite"></div>
+      <div class="clock-container">
+        <div id="clockWrapper" class="clock-wrapper">
+          <svg id="clockSvg" viewBox="0 0 400 400" role="img" aria-label="Analog clock" focusable="false"></svg>
+          <div id="digital" class="digital" aria-live="polite"></div>
+          <div id="timezoneLabel" class="timezone" aria-live="polite"></div>
+        </div>
       </div>
       <div id="controlsPanel" class="controls open" role="dialog" aria-modal="false" aria-labelledby="controlsTitle">
-        <div class="controls__header">
-          <h2 id="controlsTitle">Settings</h2>
-          <button id="closeControls" class="icon-btn" aria-label="Close settings">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
+        <button class="close-btn" id="closeControls" aria-label="Close settings">×</button>
         <div class="controls__content">
           <section class="panel" data-for-mode="normal">
             <h3>Normal Mode</h3>
@@ -151,7 +130,14 @@
             </div>
             <div class="row">
               <span>Theme</span>
-              <div class="theme-swatches" id="themeSwatches" role="listbox" aria-label="Themes"></div>
+              <div class="theme-selector" id="themeSelector" role="listbox" aria-label="Color themes">
+                <button class="swatch" data-theme="blue" style="background: #4f7fff" aria-selected="true" title="Blue theme"></button>
+                <button class="swatch" data-theme="mint" style="background: #67e8c9" aria-selected="false" title="Mint theme"></button>
+                <button class="swatch" data-theme="purple" style="background: #c084fc" aria-selected="false" title="Purple theme"></button>
+                <button class="swatch" data-theme="sunset" style="background: linear-gradient(135deg, #f59e0b, #ff6b6b)" aria-selected="false" title="Sunset theme"></button>
+                <button class="swatch" data-theme="slate" style="background: #7dd3fc" aria-selected="false" title="Slate theme"></button>
+                <button class="swatch" data-theme="contrast" style="background: #00e5ff" aria-selected="false" title="High contrast theme"></button>
+              </div>
             </div>
             
           </section>

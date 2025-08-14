@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TimeLab — Professional Clock Learning Platform</title>
+  <meta name="description" content="Master time-telling with our comprehensive learning platform featuring interactive lessons, games, progress tracking, and personalized learning paths." />
+  <meta name="keywords" content="clock learning, time education, kids learning, interactive clock, educational games" />
+  
+  <!-- Preconnect to External Resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="./styles-fixed.css" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#0a0e27" />
+  <link rel="manifest" href="./manifest.json" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230a0e27' stroke='%234f7fff' stroke-width='3'/%3E%3Cline x1='50' y1='50' x2='50' y2='20' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Cline x1='50' y1='50' x2='75' y2='50' stroke='%234f7fff' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='50' cy='50' r='4' fill='white'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <!-- Main App Container -->
+  <div id="app">
+    <!-- Header Toolbar -->
+    <header class="toolbar" role="banner">
+      <div class="toolbar__left">
+        <h1 class="brand">TimeLab</h1>
+      </div>
+      
+      <nav class="toolbar__center" role="navigation">
+        <div class="segmented-group">
+          <button class="segmented segmented--active" data-mode="normal" role="tab" aria-selected="true">
+            Normal
+          </button>
+          <button class="segmented" data-mode="interactive" role="tab" aria-selected="false">
+            Interactive
+          </button>
+          <button class="segmented" data-mode="learn" role="tab" aria-selected="false">
+            Learn
+          </button>
+          <button class="segmented" data-mode="quiz" role="tab" aria-selected="false">
+            Quiz
+          </button>
+          <button class="segmented" data-mode="games" role="tab" aria-selected="false">
+            Games
+          </button>
+        </div>
+      </nav>
+      
+      <div class="toolbar__right">
+        <!-- Profile Button -->
+        <button id="profileBtn" class="icon-btn" aria-label="Profile" title="View Profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+        
+        <!-- Settings Toggle (Mobile) -->
+        <button id="toggleSettings" class="icon-btn" aria-label="Toggle Settings" title="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6m4.22-13.22l4.24 4.24M1.54 1.54l4.24 4.24M20.46 20.46l-4.24-4.24M1.54 20.46l4.24-4.24M23 12h-6m-6 0H1"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="content" role="main">
+      <!-- Clock Container -->
+      <div class="clock-container">
+        <div class="clock-wrapper">
+          <svg id="clockSvg" viewBox="0 0 400 400" role="img" aria-label="Interactive Clock">
+            <!-- Clock elements will be dynamically generated -->
+          </svg>
+          
+          <!-- Digital Display -->
+          <div id="digitalDisplay" class="digital" aria-live="polite">
+            <span id="digitalTime">--:--:--</span>
+          </div>
+          
+          <!-- Timezone Display -->
+          <div id="timezoneDisplay" class="timezone">
+            <span id="timezoneLabel">Loading...</span>
+          </div>
+        </div>
+        
+        <!-- Learning Feedback Area -->
+        <div id="feedbackArea" class="feedback-area hidden">
+          <!-- Dynamic feedback content -->
+        </div>
+      </div>
+
+      <!-- Controls Sidebar -->
+      <aside id="controls" class="controls" role="complementary">
+        <!-- Normal Mode Panel -->
+        <section class="panel" data-mode="normal">
+          <h3>Clock Settings</h3>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showDigital" checked />
+              <span>Show Digital Time</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showSeconds" checked />
+              <span>Show Seconds</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <span>Hour Format</span>
+            <div class="segmented-group">
+              <button class="segmented" data-format="12">12h</button>
+              <button class="segmented segmented--active" data-format="24">24h</button>
+            </div>
+          </div>
+          
+          <div class="row">
+            <span>Timezone</span>
+            <select id="timezoneSelect" class="select">
+              <option value="auto">System Default</option>
+              <option value="UTC">UTC</option>
+              <option value="America/New_York">New York</option>
+              <option value="America/Los_Angeles">Los Angeles</option>
+              <option value="Europe/London">London</option>
+              <option value="Europe/Paris">Paris</option>
+              <option value="Asia/Tokyo">Tokyo</option>
+              <option value="Asia/Kolkata">Mumbai</option>
+              <option value="Australia/Sydney">Sydney</option>
+            </select>
+          </div>
+          
+          <div class="row">
+            <span>Theme</span>
+            <div id="themeSelector" class="theme-selector">
+              <!-- Theme options will be generated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Interactive Mode Panel -->
+        <section class="panel hidden" data-mode="interactive">
+          <h3>Interactive Controls</h3>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showHourHand" checked />
+              <span>Show Hour Hand</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showMinuteHand" checked />
+              <span>Show Minute Hand</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showSecondHand" />
+              <span>Show Second Hand</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="enableDragging" checked />
+              <span>Enable Dragging</span>
+            </label>
+          </div>
+          
+          <div class="row">
+            <span>Drag Mode</span>
+            <div class="segmented-group">
+              <button class="segmented segmented--active" data-drag="free">Free</button>
+              <button class="segmented" data-drag="snap">Snap</button>
+            </div>
+          </div>
+          
+          <div class="row">
+            <label>
+              <input type="checkbox" id="showIndicators" checked />
+              <span>Show Position Indicators</span>
+            </label>
+          </div>
+          
+          <div class="actions">
+            <button id="setCurrentTime" class="btn">Set Current Time</button>
+            <button id="randomTime" class="btn">Random Time</button>
+            <button id="speakTime" class="btn">Speak Time</button>
+          </div>
+        </section>
+
+        <!-- Learn Mode Panel -->
+        <section class="panel hidden" data-mode="learn">
+          <h3>Learning Path</h3>
+          
+          <!-- Progress Overview -->
+          <div class="progress-card">
+            <div class="progress-header">
+              <span>Overall Progress</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+          
+          <!-- Lesson Cards -->
+          <div class="lesson-grid">
+            <button class="lesson-card" data-lesson="oclock">
+              <div class="lesson-icon">🕐</div>
+              <div class="lesson-title">O'Clock Times</div>
+              <div class="lesson-progress">
+                <span class="stars">☆☆☆</span>
+              </div>
+            </button>
+            
+            <button class="lesson-card" data-lesson="half-past">
+              <div class="lesson-icon">🕕</div>
+              <div class="lesson-title">Half Past</div>
+              <div class="lesson-progress">
+                <span class="stars">☆☆☆</span>
+              </div>
+            </button>
+            
+            <button class="lesson-card" data-lesson="quarter">
+              <div class="lesson-icon">🕒</div>
+              <div class="lesson-title">Quarter Hours</div>
+              <div class="lesson-progress">
+                <span class="stars">☆☆☆</span>
+              </div>
+            </button>
+            
+            <button class="lesson-card" data-lesson="five-min">
+              <div class="lesson-icon">🕘</div>
+              <div class="lesson-title">5-Minute Times</div>
+              <div class="lesson-progress">
+                <span class="stars">☆☆☆</span>
+              </div>
+            </button>
+          </div>
+          
+          <div class="actions">
+            <button id="startLesson" class="btn btn--primary">Start Lesson</button>
+            <button id="practiceMode" class="btn">Practice Mode</button>
+          </div>
+        </section>
+
+        <!-- Quiz Mode Panel -->
+        <section class="panel hidden" data-mode="quiz">
+          <h3>Quiz Challenge</h3>
+          
+          <!-- Stats Display -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="quizScore">0</div>
+              <div class="stat-label">Score</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="quizStreak">0</div>
+              <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="quizBest">0</div>
+              <div class="stat-label">Best</div>
+            </div>
+          </div>
+          
+          <!-- Quiz Settings -->
+          <div class="quiz-settings">
+            <div class="row">
+              <span>Difficulty</span>
+              <div class="segmented-group">
+                <button class="segmented segmented--active" data-difficulty="easy">Easy</button>
+                <button class="segmented" data-difficulty="medium">Medium</button>
+                <button class="segmented" data-difficulty="hard">Hard</button>
+              </div>
+            </div>
+            
+            <div class="row">
+              <span>Question Type</span>
+              <div class="segmented-group">
+                <button class="segmented segmented--active" data-type="read">Read</button>
+                <button class="segmented" data-type="set">Set</button>
+                <button class="segmented" data-type="mixed">Mixed</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quiz Area -->
+          <div id="quizContent" class="quiz-content">
+            <div class="quiz-ready">
+              <p>Ready to test your time-telling skills?</p>
+              <button id="startQuiz" class="btn btn--primary">Start Quiz</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Games Mode Panel -->
+        <section class="panel hidden" data-mode="games">
+          <h3>Time Games</h3>
+          
+          <div class="games-grid">
+            <button class="game-card" data-game="race">
+              <div class="game-icon">🏃</div>
+              <div class="game-title">Race the Clock</div>
+              <div class="game-best">Best: --</div>
+            </button>
+            
+            <button class="game-card" data-game="detective">
+              <div class="game-icon">🕵️</div>
+              <div class="game-title">Time Detective</div>
+              <div class="game-best">Best: --</div>
+            </button>
+            
+            <button class="game-card" data-game="memory">
+              <div class="game-icon">🧠</div>
+              <div class="game-title">Clock Memory</div>
+              <div class="game-best">Best: --</div>
+            </button>
+            
+            <button class="game-card" data-game="zones">
+              <div class="game-icon">🌍</div>
+              <div class="game-title">World Time</div>
+              <div class="game-best">Best: --</div>
+            </button>
+          </div>
+          
+          <div id="gameArea" class="game-area hidden">
+            <!-- Game content loads here -->
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>My Profile</h2>
+        <button class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Profile content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement Toast -->
+  <div id="achievementToast" class="achievement-toast hidden" role="alert">
+    <div class="achievement-icon">🏆</div>
+    <div class="achievement-text">
+      <div class="achievement-title">Achievement Unlocked!</div>
+      <div class="achievement-desc">Description here</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./learning-system.js"></script>
+  <script src="./script-improved.js"></script>
+</body>
+</html>
