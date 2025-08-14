@@ -32,12 +32,23 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      // Consent Mode V2 - Set defaults before config
+      // Consent Mode V2 - Set defaults for EU/EEA regions only
       gtag('consent', 'default', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
+        'functionality_storage': 'granted',
+        'security_storage': 'granted',
+        'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO', 'GB', 'CH']
+      });
+      
+      // Default to granted for non-EU regions
+      gtag('consent', 'default', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
         'functionality_storage': 'granted',
         'security_storage': 'granted'
       });
@@ -45,6 +56,13 @@
       gtag('config', 'G-2QWTP53NMH', {
         'anonymize_ip': true,
         'cookie_flags': 'SameSite=Strict;Secure'
+      });
+
+      // Listen for Google Funding Choices consent updates
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'consent-update') {
+          gtag('consent', 'update', event.data.consent);
+        }
       });
     </script>
     
