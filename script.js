@@ -2,7 +2,7 @@
 (() => {
 
   const state = {
-    mode: "normal", // "normal" | "interactive"
+    mode: "normal", // "normal" | "interactive" | "learn" | "quiz" | "games"
     showDigital: true,
     showSeconds: true,
     hourCycle: 24, // 12 | 24
@@ -19,6 +19,33 @@
       dragMode: "independent", // "independent" | "snapped"
       spotlight: true,
       time: { h: 10, m: 10, s: 0 },
+    },
+
+    // learning
+    learning: {
+      currentLesson: null,
+      currentStep: 0,
+      progress: {},
+      achievements: [],
+    },
+
+    // quiz
+    quiz: {
+      score: 0,
+      streak: 0,
+      bestScore: 0,
+      difficulty: "easy", // "easy" | "medium" | "hard"
+      type: "read", // "read" | "set"
+      currentQuestion: null,
+      isActive: false,
+    },
+
+    // games
+    games: {
+      raceTime: null,
+      detectiveScore: 0,
+      memoryScore: 0,
+      currentGame: null,
     },
   };
 
@@ -38,7 +65,6 @@
   const toggleSeconds = document.getElementById("toggleSeconds");
   const themeSwatches = document.getElementById("themeSwatches");
   const timezoneSelect = document.getElementById("timezoneSelect");
-  const toggleAds = document.getElementById("toggleAds");
   const adBanner = document.getElementById("adBanner");
 
   const iShowHour = document.getElementById("iShowHour");
@@ -51,20 +77,192 @@
   const btnReadTime = document.getElementById("btnReadTime");
   const btnSetNow = document.getElementById("btnSetNow");
   const btnRandomTime = document.getElementById("btnRandomTime");
-  // reserved for future quiz features
+
+  // Learning elements
+  const progressFill = document.getElementById("progressFill");
+  const progressText = document.getElementById("progressText");
+  const lessonBtns = Array.from(document.querySelectorAll('.lesson-btn'));
+  const tutorialContent = document.getElementById("tutorialContent");
+  const btnStartLesson = document.getElementById("btnStartLesson");
+  const btnNextStep = document.getElementById("btnNextStep");
+  const btnRepeat = document.getElementById("btnRepeat");
+
+  // Quiz elements
+  const quizScore = document.getElementById("quizScore");
+  const quizStreak = document.getElementById("quizStreak");
+  const quizBest = document.getElementById("quizBest");
+  const difficultyBtns = Array.from(document.querySelectorAll('[data-difficulty]'));
+  const quizTypeBtns = Array.from(document.querySelectorAll('[data-quiz-type]'));
+  const quizQuestion = document.getElementById("quizQuestion");
+  const quizOptions = document.getElementById("quizOptions");
+  const quizFeedback = document.getElementById("quizFeedback");
+  const btnStartQuiz = document.getElementById("btnStartQuiz");
+  const btnNextQuiz = document.getElementById("btnNextQuiz");
+
+  // Game elements
+  const gamesBtns = Array.from(document.querySelectorAll('.game-btn'));
+  const gameArea = document.getElementById("gameArea");
+  const raceBest = document.getElementById("raceBest");
+  const detectiveBest = document.getElementById("detectiveBest");
+  const memoryBest = document.getElementById("memoryBest");
+
+  // Feedback elements
+  const achievementToast = document.getElementById("achievementToast");
+  const feedbackOverlay = document.getElementById("feedbackOverlay");
+  const feedbackIcon = document.getElementById("feedbackIcon");
+  const feedbackText = document.getElementById("feedbackText");
+  const feedbackStars = document.getElementById("feedbackStars");
 
   const THEMES = ["blue", "mint", "purple", "sunset", "slate", "contrast"];
+
+  // Learning content
+  const LESSONS = {
+    "oclock": {
+      title: "O'Clock Times",
+      icon: "🕐",
+      steps: [
+        "When the minute hand points to 12, we say 'o'clock'",
+        "The hour hand points to the number for that hour",
+        "1 o'clock means the time is exactly 1:00",
+        "Try to find 3 o'clock on the clock!"
+      ],
+      practice: [
+        { h: 3, m: 0, question: "What time is this?" },
+        { h: 7, m: 0, question: "What time is this?" },
+        { h: 12, m: 0, question: "What time is this?" },
+      ]
+    },
+    "half-past": {
+      title: "Half Past",
+      icon: "🕕",
+      steps: [
+        "Half past means 30 minutes after the hour",
+        "The minute hand points to 6 (halfway around)",
+        "The hour hand is halfway between two numbers",
+        "Half past 2 means 2:30"
+      ],
+      practice: [
+        { h: 2, m: 30, question: "What time is this?" },
+        { h: 5, m: 30, question: "What time is this?" },
+        { h: 9, m: 30, question: "What time is this?" },
+      ]
+    },
+    "quarter": {
+      title: "Quarter Past/To",
+      icon: "🕒", 
+      steps: [
+        "Quarter past means 15 minutes after the hour",
+        "Quarter to means 15 minutes before the next hour",
+        "Quarter past: minute hand points to 3",
+        "Quarter to: minute hand points to 9"
+      ],
+      practice: [
+        { h: 3, m: 15, question: "What time is this?" },
+        { h: 6, m: 45, question: "What time is this?" },
+        { h: 10, m: 15, question: "What time is this?" },
+      ]
+    },
+    "five-minute": {
+      title: "5-Minute Times",
+      icon: "🕓",
+      steps: [
+        "Each number on the clock represents 5 minutes",
+        "Count by 5s: 5, 10, 15, 20, 25, 30...",
+        "The minute hand points to the number of 5-minute groups",
+        "Practice reading different 5-minute times"
+      ],
+      practice: [
+        { h: 4, m: 20, question: "What time is this?" },
+        { h: 8, m: 35, question: "What time is this?" },
+        { h: 11, m: 50, question: "What time is this?" },
+      ]
+    }
+  };
+
+  // Quiz questions
+  const QUIZ_QUESTIONS = {
+    easy: [
+      { h: 3, m: 0, options: ["3:00", "4:00", "2:00", "12:00"], correct: 0 },
+      { h: 6, m: 0, options: ["5:00", "6:00", "7:00", "12:00"], correct: 1 },
+      { h: 9, m: 0, options: ["8:00", "10:00", "9:00", "3:00"], correct: 2 },
+      { h: 12, m: 0, options: ["12:00", "1:00", "11:00", "6:00"], correct: 0 },
+    ],
+    medium: [
+      { h: 2, m: 30, options: ["2:30", "2:15", "3:00", "2:45"], correct: 0 },
+      { h: 7, m: 15, options: ["7:30", "7:15", "7:45", "8:15"], correct: 1 },
+      { h: 4, m: 45, options: ["4:15", "5:15", "4:45", "4:30"], correct: 2 },
+      { h: 10, m: 30, options: ["10:15", "11:00", "10:45", "10:30"], correct: 3 },
+    ],
+    hard: [
+      { h: 1, m: 25, options: ["1:25", "1:20", "1:30", "1:35"], correct: 0 },
+      { h: 5, m: 40, options: ["5:35", "5:40", "5:45", "6:40"], correct: 1 },
+      { h: 8, m: 55, options: ["8:50", "9:55", "8:55", "8:45"], correct: 2 },
+      { h: 11, m: 10, options: ["11:05", "11:15", "12:10", "11:10"], correct: 3 },
+    ]
+  };
+
+  // Achievements
+  const ACHIEVEMENTS = [
+    { id: "first_lesson", title: "First Steps", desc: "Complete your first lesson", icon: "👶" },
+    { id: "oclock_master", title: "O'Clock Master", desc: "Master all o'clock times", icon: "🕐" },
+    { id: "half_past_hero", title: "Half Past Hero", desc: "Master half past times", icon: "🕕" },
+    { id: "quarter_champion", title: "Quarter Champion", desc: "Master quarter times", icon: "🕒" },
+    { id: "time_wizard", title: "Time Wizard", desc: "Master 5-minute intervals", icon: "🧙‍♂️" },
+    { id: "quiz_starter", title: "Quiz Starter", desc: "Take your first quiz", icon: "❓" },
+    { id: "perfect_score", title: "Perfect Score", desc: "Get 10 quiz questions right in a row", icon: "⭐" },
+    { id: "speed_demon", title: "Speed Demon", desc: "Complete Race the Clock in under 30 seconds", icon: "⚡" },
+    { id: "detective", title: "Time Detective", desc: "Score 80% or higher in Time Detective", icon: "🕵️" },
+  ];
 
   let lastTickTs = 0;
   let components = null; // references to SVG parts
   let spot = null; // spotlight elements
 
   function init() {
+    loadProgress();
     renderThemeSwatches();
     buildClock();
     wireUI();
     updateTimezoneLabel();
+    updateLearningProgress();
+    updateQuizStats();
+    updateGameStats();
     requestAnimationFrame(tick);
+  }
+
+  // Load progress from localStorage
+  function loadProgress() {
+    try {
+      const saved = localStorage.getItem('timelab-progress');
+      if (saved) {
+        const progress = JSON.parse(saved);
+        state.learning.progress = progress.learning || {};
+        state.learning.achievements = progress.achievements || [];
+        state.quiz.bestScore = progress.quizBest || 0;
+        state.games.raceTime = progress.raceTime || null;
+        state.games.detectiveScore = progress.detectiveScore || 0;
+        state.games.memoryScore = progress.memoryScore || 0;
+      }
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+  }
+
+  // Save progress to localStorage
+  function saveProgress() {
+    try {
+      const progress = {
+        learning: state.learning.progress,
+        achievements: state.learning.achievements,
+        quizBest: state.quiz.bestScore,
+        raceTime: state.games.raceTime,
+        detectiveScore: state.games.detectiveScore,
+        memoryScore: state.games.memoryScore,
+      };
+      localStorage.setItem('timelab-progress', JSON.stringify(progress));
+    } catch (e) {
+      // Ignore localStorage errors
+    }
   }
 
   function renderThemeSwatches() {
@@ -115,6 +313,47 @@
       });
     });
 
+    // Learning mode event listeners
+    lessonBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const lesson = btn.dataset.lesson;
+        selectLesson(lesson);
+      });
+    });
+
+    btnStartLesson.addEventListener("click", startCurrentLesson);
+    btnNextStep.addEventListener("click", nextLessonStep);
+    btnRepeat.addEventListener("click", repeatLesson);
+
+    // Quiz mode event listeners
+    difficultyBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.quiz.difficulty = btn.dataset.difficulty;
+        difficultyBtns.forEach((x) => x.classList.toggle("segmented--active", x === btn));
+      });
+    });
+
+    quizTypeBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.quiz.type = btn.dataset.quizType;
+        quizTypeBtns.forEach((x) => x.classList.toggle("segmented--active", x === btn));
+      });
+    });
+
+    btnStartQuiz.addEventListener("click", startQuiz);
+    btnNextQuiz.addEventListener("click", nextQuizQuestion);
+
+    // Game mode event listeners
+    gamesBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const game = btn.dataset.game;
+        startGame(game);
+      });
+    });
+
+    // Feedback overlay click to close
+    feedbackOverlay.addEventListener("click", hideFeedback);
+
     toggleDigital.addEventListener("change", () => {
       state.showDigital = toggleDigital.checked;
       digitalEl.style.display = state.showDigital ? "block" : "none";
@@ -130,9 +369,7 @@
       updateTimezoneLabel();
     });
 
-    toggleAds.addEventListener("change", () => {
-      adBanner.hidden = !toggleAds.checked;
-    });
+    // Ads: always on if AdSense is present. If you need a privacy toggle, wire it here.
 
     btnHourCycle.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -478,6 +715,443 @@
     if (!spot) return;
     spot.group.setAttribute("opacity", "0");
     if (components?.numbers) Array.from(components.numbers.children).forEach((n) => n.setAttribute("fill", "var(--text)"));
+  }
+
+  // Learning Mode Functions
+  function updateLearningProgress() {
+    const totalLessons = Object.keys(LESSONS).length;
+    const completedLessons = Object.keys(state.learning.progress).filter(lesson => 
+      state.learning.progress[lesson] >= 3
+    ).length;
+    const progress = Math.round((completedLessons / totalLessons) * 100);
+    
+    progressFill.style.width = progress + '%';
+    progressText.textContent = `Progress: ${progress}%`;
+
+    // Update lesson buttons with stars
+    lessonBtns.forEach(btn => {
+      const lesson = btn.dataset.lesson;
+      const stars = state.learning.progress[lesson] || 0;
+      const starEl = btn.querySelector('.lesson-stars');
+      starEl.textContent = '★'.repeat(stars) + '☆'.repeat(3 - stars);
+      starEl.dataset.stars = stars;
+      
+      if (stars >= 3) {
+        btn.classList.add('completed');
+      }
+    });
+  }
+
+  function selectLesson(lessonId) {
+    state.learning.currentLesson = lessonId;
+    state.learning.currentStep = 0;
+    
+    lessonBtns.forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.lesson === lessonId);
+    });
+    
+    tutorialContent.innerHTML = '';
+    btnStartLesson.style.display = 'inline-block';
+    btnNextStep.style.display = 'none';
+  }
+
+  function startCurrentLesson() {
+    if (!state.learning.currentLesson) return;
+    
+    const lesson = LESSONS[state.learning.currentLesson];
+    if (!lesson) return;
+    
+    tutorialContent.classList.add('active');
+    displayLessonStep();
+    btnStartLesson.style.display = 'none';
+    btnNextStep.style.display = 'inline-block';
+    
+    // Check for first lesson achievement
+    checkAchievement('first_lesson');
+  }
+
+  function displayLessonStep() {
+    const lesson = LESSONS[state.learning.currentLesson];
+    const step = state.learning.currentStep;
+    
+    if (step < lesson.steps.length) {
+      tutorialContent.innerHTML = `
+        <div class="tutorial-step">
+          <p><strong>Step ${step + 1}:</strong> ${lesson.steps[step]}</p>
+        </div>
+      `;
+      
+      // Show example time for certain steps
+      if (step === lesson.steps.length - 1 && lesson.practice[0]) {
+        const practice = lesson.practice[0];
+        setClockTime(practice.h, practice.m, 0);
+      }
+    }
+  }
+
+  function nextLessonStep() {
+    const lesson = LESSONS[state.learning.currentLesson];
+    state.learning.currentStep++;
+    
+    if (state.learning.currentStep < lesson.steps.length) {
+      displayLessonStep();
+    } else {
+      completeLesson();
+    }
+  }
+
+  function completeLesson() {
+    const lessonId = state.learning.currentLesson;
+    const currentStars = state.learning.progress[lessonId] || 0;
+    const newStars = Math.min(currentStars + 1, 3);
+    
+    state.learning.progress[lessonId] = newStars;
+    saveProgress();
+    updateLearningProgress();
+    
+    showFeedback(
+      '🎉',
+      'Lesson Complete!',
+      '★'.repeat(newStars) + '☆'.repeat(3 - newStars)
+    );
+    
+    // Check for lesson-specific achievements
+    if (newStars >= 3) {
+      checkAchievement(lessonId + '_master');
+    }
+    
+    btnNextStep.style.display = 'none';
+    btnStartLesson.style.display = 'inline-block';
+    tutorialContent.classList.remove('active');
+  }
+
+  function repeatLesson() {
+    if (!state.learning.currentLesson) return;
+    state.learning.currentStep = 0;
+    startCurrentLesson();
+  }
+
+  // Quiz Mode Functions
+  function updateQuizStats() {
+    quizScore.textContent = state.quiz.score;
+    quizStreak.textContent = state.quiz.streak;
+    quizBest.textContent = state.quiz.bestScore;
+  }
+
+  function startQuiz() {
+    state.quiz.isActive = true;
+    state.quiz.score = 0;
+    state.quiz.streak = 0;
+    generateQuizQuestion();
+    btnStartQuiz.style.display = 'none';
+    btnNextQuiz.style.display = 'inline-block';
+    
+    checkAchievement('quiz_starter');
+  }
+
+  function generateQuizQuestion() {
+    const questions = QUIZ_QUESTIONS[state.quiz.difficulty];
+    const question = questions[Math.floor(Math.random() * questions.length)];
+    
+    state.quiz.currentQuestion = question;
+    
+    if (state.quiz.type === 'read') {
+      setClockTime(question.h, question.m, 0);
+      quizQuestion.textContent = "What time does the clock show?";
+      
+      quizOptions.innerHTML = '';
+      question.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = option;
+        btn.addEventListener('click', () => selectQuizAnswer(index));
+        quizOptions.appendChild(btn);
+      });
+    } else {
+      // Set time type quiz
+      const timeStr = formatTime12Hour(question.h, question.m);
+      quizQuestion.textContent = `Set the clock to ${timeStr}`;
+      quizOptions.innerHTML = '<p>Drag the clock hands to set the time, then click Next.</p>';
+      
+      // Switch to interactive mode for setting
+      state.interactive.time = { h: 6, m: 0, s: 0 };
+    }
+    
+    quizFeedback.innerHTML = '';
+    quizFeedback.className = 'quiz-feedback';
+  }
+
+  function selectQuizAnswer(selectedIndex) {
+    const question = state.quiz.currentQuestion;
+    const correct = selectedIndex === question.correct;
+    
+    // Update options display
+    Array.from(quizOptions.children).forEach((option, index) => {
+      option.classList.remove('correct', 'incorrect');
+      if (index === question.correct) {
+        option.classList.add('correct');
+      } else if (index === selectedIndex) {
+        option.classList.add('incorrect');
+      }
+      option.disabled = true;
+    });
+    
+    // Update feedback
+    if (correct) {
+      state.quiz.score++;
+      state.quiz.streak++;
+      quizFeedback.textContent = 'Correct! Well done!';
+      quizFeedback.className = 'quiz-feedback correct';
+      playSound('success');
+    } else {
+      state.quiz.streak = 0;
+      quizFeedback.textContent = `Incorrect. The answer is ${question.options[question.correct]}.`;
+      quizFeedback.className = 'quiz-feedback incorrect';
+      playSound('error');
+    }
+    
+    updateQuizStats();
+    
+    // Check for achievements
+    if (state.quiz.streak >= 10) {
+      checkAchievement('perfect_score');
+    }
+    
+    if (state.quiz.score > state.quiz.bestScore) {
+      state.quiz.bestScore = state.quiz.score;
+      saveProgress();
+    }
+  }
+
+  function nextQuizQuestion() {
+    generateQuizQuestion();
+  }
+
+  // Game Mode Functions
+  function updateGameStats() {
+    raceBest.textContent = state.games.raceTime ? state.games.raceTime + 's' : '--';
+    detectiveBest.textContent = state.games.detectiveScore + '%';
+    memoryBest.textContent = state.games.memoryScore + '';
+  }
+
+  function startGame(gameType) {
+    state.games.currentGame = gameType;
+    gameArea.classList.add('active');
+    
+    switch (gameType) {
+      case 'race':
+        startRaceGame();
+        break;
+      case 'detective':
+        startDetectiveGame();
+        break;
+      case 'memory':
+        startMemoryGame();
+        break;
+    }
+  }
+
+  function startRaceGame() {
+    const startTime = Date.now();
+    let completedTimes = 0;
+    const targetTimes = [
+      { h: 3, m: 0 }, { h: 6, m: 30 }, { h: 9, m: 15 }, { h: 12, m: 45 }, { h: 2, m: 20 }
+    ];
+    
+    function nextTarget() {
+      if (completedTimes >= targetTimes.length) {
+        const totalTime = Math.round((Date.now() - startTime) / 1000);
+        if (!state.games.raceTime || totalTime < state.games.raceTime) {
+          state.games.raceTime = totalTime;
+          saveProgress();
+          updateGameStats();
+          
+          if (totalTime <= 30) {
+            checkAchievement('speed_demon');
+          }
+        }
+        
+        showFeedback('🏁', `Race Complete!`, `Time: ${totalTime}s`);
+        gameArea.classList.remove('active');
+        return;
+      }
+      
+      const target = targetTimes[completedTimes];
+      gameArea.innerHTML = `
+        <h4>Race the Clock</h4>
+        <p>Set the clock to: <strong>${formatTime12Hour(target.h, target.m)}</strong></p>
+        <p>Completed: ${completedTimes}/${targetTimes.length}</p>
+        <button onclick="checkRaceTime(${target.h}, ${target.m})">Check Time</button>
+      `;
+    }
+    
+    window.checkRaceTime = (targetH, targetM) => {
+      const current = state.interactive.time;
+      if (current.h === targetH && current.m === targetM) {
+        completedTimes++;
+        playSound('success');
+        nextTarget();
+      } else {
+        playSound('error');
+        gameArea.innerHTML += '<p style="color: var(--danger)">Try again!</p>';
+      }
+    };
+    
+    nextTarget();
+  }
+
+  function startDetectiveGame() {
+    const activities = [
+      { time: '7:00 AM', activity: 'Wake up', options: ['Wake up', 'Lunch time', 'Bedtime', 'Dinner time'] },
+      { time: '12:00 PM', activity: 'Lunch time', options: ['Breakfast', 'Lunch time', 'Snack time', 'Midnight'] },
+      { time: '3:00 PM', activity: 'Snack time', options: ['Breakfast', 'Dinner', 'Snack time', 'Sleep'] },
+      { time: '8:00 PM', activity: 'Bedtime', options: ['Wake up', 'Lunch', 'School time', 'Bedtime'] },
+    ];
+    
+    let currentQ = 0;
+    let correct = 0;
+    
+    function nextQuestion() {
+      if (currentQ >= activities.length) {
+        const score = Math.round((correct / activities.length) * 100);
+        if (score > state.games.detectiveScore) {
+          state.games.detectiveScore = score;
+          saveProgress();
+          updateGameStats();
+          
+          if (score >= 80) {
+            checkAchievement('detective');
+          }
+        }
+        
+        showFeedback('🕵️', 'Detective Work Complete!', `Score: ${score}%`);
+        gameArea.classList.remove('active');
+        return;
+      }
+      
+      const q = activities[currentQ];
+      gameArea.innerHTML = `
+        <h4>Time Detective</h4>
+        <p>What activity usually happens at <strong>${q.time}</strong>?</p>
+        <div class="quiz-options">
+          ${q.options.map((option, i) => 
+            `<button class="quiz-option" onclick="answerDetective(${i})">${option}</button>`
+          ).join('')}
+        </div>
+        <p>Question ${currentQ + 1} of ${activities.length}</p>
+      `;
+    }
+    
+    window.answerDetective = (selected) => {
+      const q = activities[currentQ];
+      if (q.options[selected] === q.activity) {
+        correct++;
+        playSound('success');
+      } else {
+        playSound('error');
+      }
+      currentQ++;
+      setTimeout(nextQuestion, 1000);
+    };
+    
+    nextQuestion();
+  }
+
+  function startMemoryGame() {
+    // Simple memory game with time patterns
+    gameArea.innerHTML = `
+      <h4>Time Memory</h4>
+      <p>Memory game coming soon! 🧠</p>
+      <button onclick="gameArea.classList.remove('active')">Close</button>
+    `;
+  }
+
+  // Helper Functions
+  function setClockTime(h, m, s) {
+    if (state.mode === 'interactive' || state.mode === 'learn' || state.mode === 'quiz') {
+      state.interactive.time = { h, m, s };
+    }
+  }
+
+  function formatTime12Hour(h, m) {
+    const period = h >= 12 ? 'PM' : 'AM';
+    const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${hour12}:${String(m).padStart(2, '0')} ${period}`;
+  }
+
+  function showFeedback(icon, text, stars) {
+    feedbackIcon.textContent = icon;
+    feedbackText.textContent = text;
+    feedbackStars.textContent = stars;
+    feedbackOverlay.classList.add('show');
+    
+    setTimeout(() => {
+      hideFeedback();
+    }, 3000);
+  }
+
+  function hideFeedback() {
+    feedbackOverlay.classList.remove('show');
+  }
+
+  function checkAchievement(achievementId) {
+    if (state.learning.achievements.includes(achievementId)) return;
+    
+    const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+    if (!achievement) return;
+    
+    state.learning.achievements.push(achievementId);
+    saveProgress();
+    showAchievement(achievement);
+  }
+
+  function showAchievement(achievement) {
+    const desc = achievementToast.querySelector('.achievement-desc');
+    desc.textContent = achievement.desc;
+    
+    const icon = achievementToast.querySelector('.achievement-icon');
+    icon.textContent = achievement.icon;
+    
+    achievementToast.classList.add('show');
+    playSound('achievement');
+    
+    setTimeout(() => {
+      achievementToast.classList.remove('show');
+    }, 4000);
+  }
+
+  function playSound(type) {
+    // Simple audio feedback using Web Audio API
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+    
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    switch (type) {
+      case 'success':
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+        break;
+      case 'error':
+        oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+        oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.1); // G3
+        break;
+      case 'achievement':
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
+        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.1); // C5
+        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.2); // E5
+        break;
+    }
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.3);
   }
 
   // Init
