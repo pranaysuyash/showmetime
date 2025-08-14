@@ -898,13 +898,57 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   }
   
   .controls {
-    width: min(350px, 95vw);
+    width: calc(100vw - 16px);
     right: 8px;
+    left: 8px;
     top: 64px;
+    max-height: calc(100vh - 80px);
   }
   
   .clock-wrapper {
-    width: min(85vmin, 300px);
+    width: min(75vmin, 280px);
+  }
+  
+  /* When controls are open on mobile, make clock smaller */
+  .controls.open ~ .content .clock-wrapper {
+    width: min(65vmin, 240px);
+  }
+  
+  /* Make learning content more visible on mobile */
+  .tutorial-content {
+    margin: 16px 0;
+    padding: 16px;
+    font-size: 15px;
+  }
+  
+  .lesson-grid {
+    gap: 10px;
+  }
+  
+  .lesson-btn {
+    min-height: 100px;
+    padding: 12px 8px;
+  }
+  
+  .quiz-question {
+    font-size: 16px;
+    margin-bottom: 16px;
+    min-height: 40px;
+  }
+  
+  .quiz-options {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .quiz-option {
+    padding: 14px;
+    font-size: 14px;
+  }
+  
+  .game-area {
+    padding: 16px;
+    margin-top: 16px;
   }
 }
 

@@ -310,6 +310,11 @@
         state.mode = b.dataset.mode;
         modeBtns.forEach((x) => x.classList.toggle("segmented--active", x === b));
         updatePanelsForMode();
+        
+        // Ensure controls panel is open on mobile for learning modes
+        if (window.innerWidth <= 768 && ['learn', 'quiz', 'games'].includes(state.mode)) {
+          toggleControls(true);
+        }
       });
     });
 
