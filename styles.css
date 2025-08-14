@@ -127,7 +127,10 @@ body {
   position: fixed;
   inset: 56px 0 0 0;
   display: grid;
-  place-items: center;
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: center;
+  gap: 16px;
   padding: 20px;
 }
 
@@ -161,20 +164,30 @@ body {
 
 .digital {
   position: absolute;
-  bottom: -52px;
+  bottom: -70px;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(16px, 3.2vmin, 28px);
   color: var(--text);
   letter-spacing: 0.5px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  z-index: 10;
 }
 
 .timezone {
   position: absolute;
-  top: -40px; left: 50%;
+  top: -50px; left: 50%;
   transform: translateX(-50%);
   font-size: clamp(10px, 1.6vmin, 13px);
   color: var(--muted);
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  z-index: 10;
 }
 
 .controls {
@@ -296,7 +309,33 @@ body {
   backdrop-filter: blur(10px);
 }
 .hand-active { filter: drop-shadow(0 0 6px var(--accent-2)); }
-[data-hi="true"] { fill: var(--accent-2) !important; }
+.highlight-number { fill: var(--accent-2); }
+
+/* Interactive mode hand states */
+#clockSvg.interactive-mode .hands > line {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+#clockSvg.interactive-mode .hands > line:hover {
+  filter: drop-shadow(0 0 4px var(--accent-2));
+  stroke-width: 4;
+}
+
+#clockSvg.interactive-mode .hands > line[data-dragging="true"] {
+  filter: drop-shadow(0 0 8px var(--accent-2));
+  stroke: var(--accent-2);
+}
+
+/* Interactive indicator circle */
+#interactive-indicator {
+  animation: pulse-indicator 3s ease-in-out infinite;
+}
+
+@keyframes pulse-indicator {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
 
 /* Themes */
 body.theme-blue { --bg: #0b1020; --panel: #121933; --text: #e7ecff; --muted: #9aa3b2; --accent: #5eb0ef; --accent-2: #8be38b; --danger: #ff6b6b; --ring: rgba(94,176,239,0.35); }
@@ -813,9 +852,11 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   transition: transform 0.5s ease;
   z-index: 1000;
   max-width: 300px;
+  display: none;
 }
 
 .achievement-toast.show {
+  display: block;
   transform: translateX(0);
 }
 
@@ -951,7 +992,7 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
 
 /* Always show footer since ads are hidden by default */
 .footer {
-  display: block !important;
+  display: block;
 }
 
 .content {
@@ -1034,6 +1075,24 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   }
 }
 
+/* Desktop layout: dock controls sidebar */
+@media (min-width: 980px) {
+  .content {
+    grid-template-columns: minmax(420px, 1fr) min(400px, 32vw);
+    align-items: start;
+    justify-items: center;
+  }
+  .controls {
+    position: static;
+    width: 100%;
+    max-height: none;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Hide the close button on desktop */
+  #closeControls { display: none; }
+}
 @media (max-width: 560px) {
   .lesson-grid {
     grid-template-columns: 1fr;

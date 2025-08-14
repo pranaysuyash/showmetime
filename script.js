@@ -217,6 +217,7 @@
   let lastTickTs = 0;
   let components = null; // references to SVG parts
   let spot = null; // spotlight elements
+  let interactiveDigitalTimer = null;
 
   function init() {
     loadProgress();
@@ -452,12 +453,23 @@
     });
     
     // Handle digital display based on mode
-    if (state.mode === "interactive" || state.mode === "learn" || state.mode === "quiz" || state.mode === "games") {
+    if (state.mode === "interactive") {
+      digitalEl.style.display = state.showDigital ? "block" : "none";
+      timezoneEl.style.display = "none";
+      setSpotlightIdleStyle();
+    } else if (state.mode === "learn" || state.mode === "quiz" || state.mode === "games") {
       digitalEl.style.display = "none";
       timezoneEl.style.display = "none";
+      setSpotlightIdleStyle();
     } else {
       digitalEl.style.display = state.showDigital ? "block" : "none";
       timezoneEl.style.display = "block";
+      hideSpotlight();
+    }
+    
+    // Update timezone label for normal mode
+    if (state.mode === "normal") {
+      updateTimezoneLabel();
     }
     
     // Auto-close controls on mobile when switching modes
@@ -534,12 +546,24 @@
     clockSvg.appendChild(hands);
 
     // spotlight elements
-    const spotGroup = el("g", { id: "spotlight", opacity: 0 });
-    const spotCircle = el("circle", { cx: 200, cy: 200, r: 16, fill: "none", stroke: "var(--accent-2)", strokeWidth: 3 });
+    const spotGroup = el("g", { id: "spotlight", opacity: 0.4 });
+    const spotCircle = el("circle", { cx: 200, cy: 200, r: 16, fill: "none", stroke: "var(--accent-2)", strokeWidth: 3, strokeDasharray: "4 6" });
     spotGroup.appendChild(spotCircle);
     clockSvg.appendChild(spotGroup);
 
-    components = { numbers, hourHand, minuteHand, secondHand };
+    // Interactive mode indicator circle - always visible when interactive
+    const interactiveIndicator = el("circle", { 
+      cx: 200, cy: 200, r: 210, 
+      fill: "none", 
+      stroke: "var(--accent-2)", 
+      strokeWidth: 2, 
+      strokeDasharray: "8 12", 
+      opacity: 0.3,
+      id: "interactive-indicator"
+    });
+    clockSvg.appendChild(interactiveIndicator);
+
+    components = { numbers, hourHand, minuteHand, secondHand, interactiveIndicator };
     spot = { group: spotGroup, circle: spotCircle };
 
     // drag interactions for interactive mode
@@ -567,6 +591,18 @@
     components.minuteHand.style.display = state.mode === "interactive" && !inter.showMinute ? "none" : "";
     components.secondHand.style.display = (state.mode === "interactive" && !inter.showSecond) ? "none" : (state.mode === "normal" && !state.showSeconds ? "none" : "");
     components.numbers.style.display = state.mode === "interactive" && !inter.showNumbers ? "none" : "";
+    
+    // Show/hide interactive indicator and add class
+    if (components.interactiveIndicator) {
+      components.interactiveIndicator.style.display = state.mode === "interactive" ? "block" : "none";
+    }
+    
+    // Add interactive class to SVG for styling
+    if (state.mode === "interactive") {
+      clockSvg.classList.add("interactive-mode");
+    } else {
+      clockSvg.classList.remove("interactive-mode");
+    }
   }
 
   function tick(ts) {
@@ -612,6 +648,51 @@
     setRotation(components.hourHand, hourAngle);
     setRotation(components.minuteHand, minuteAngle);
     setRotation(components.secondHand, secondAngle);
+    
+    // Update digital display with interactive time
+    if (state.showDigital) {
+      const date = new Date();
+      date.setHours(Math.floor(t.h), Math.floor(t.m), Math.floor(t.s));
+      digitalEl.textContent = formatDigital(date, state.hourCycle, state.showSeconds);
+    }
+    
+    // Show dotted circles at hand positions
+    updateHandPositionIndicators();
+  }
+  
+  function updateHandPositionIndicators() {
+    if (state.mode !== "interactive") return;
+    
+    const t = state.interactive.time;
+    const inter = state.interactive;
+    
+    // Show indicators for visible hands
+    if (inter.showHour) updateHandIndicator("hour", ((t.h % 12) + t.m / 60) * 30, 80);
+    if (inter.showMinute) updateHandIndicator("minute", t.m * 6, 110);
+    if (inter.showSecond) updateHandIndicator("second", t.s * 6, 130);
+  }
+  
+  function updateHandIndicator(type, deg, length) {
+    const rad = (deg * Math.PI) / 180;
+    const x = 200 + length * Math.sin(rad);
+    const y = 200 - length * Math.cos(rad);
+    
+    let indicator = document.getElementById(`${type}-indicator`);
+    if (!indicator) {
+      indicator = el("circle", {
+        id: `${type}-indicator`,
+        r: 6,
+        fill: "none",
+        stroke: "var(--accent-2)",
+        strokeWidth: 2,
+        strokeDasharray: "3 3",
+        opacity: 0.6
+      });
+      clockSvg.appendChild(indicator);
+    }
+    
+    indicator.setAttribute("cx", String(x));
+    indicator.setAttribute("cy", String(y));
   }
 
   function setRotation(lineEl, deg) {
@@ -702,6 +783,7 @@
     const start = (e) => {
       if (state.mode !== "interactive" || !state.interactive.allowDrag) return;
       dragging = true;
+      handEl.setAttribute("data-dragging", "true");
       e.preventDefault();
     };
     const move = (e) => {
@@ -735,7 +817,11 @@
 
       if (inter.spotlight) updateSpotlight(type, deg);
     };
-    const end = () => { dragging = false; hideSpotlight(); };
+    const end = () => { 
+      dragging = false; 
+      handEl.removeAttribute("data-dragging");
+      hideSpotlight(); 
+    };
 
     handEl.addEventListener("mousedown", start);
     window.addEventListener("mousemove", move);
