@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TimeLab — Interactive Analog Clock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="theme-blue">
+    <header class="toolbar" role="banner">
+      <div class="toolbar__left">
+        <span class="brand" aria-label="TimeLab">TimeLab</span>
+      </div>
+      <div class="toolbar__center" role="tablist" aria-label="Mode selector">
+        <button class="segmented segmented--active" data-mode="normal" role="tab" aria-selected="true">Normal</button>
+        <button class="segmented" data-mode="interactive" role="tab" aria-selected="false">Interactive</button>
+      </div>
+      <div class="toolbar__right">
+        <button id="toggleControls" class="icon-btn" aria-haspopup="dialog" aria-expanded="true" aria-controls="controlsPanel" title="Settings" aria-label="Open settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 3.6 15a1.65 1.65 0 0 0-1.51-1H2a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 3.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 3.6a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 3.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 20.4 8c0 .59.22 1.16.6 1.6.39.44.6 1.01.6 1.6s-.21 1.16-.6 1.6c-.38.44-.6 1.01-.6 1.6z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="content" role="main">
+      <div id="clockWrapper" class="clock-wrapper">
+        <svg id="clockSvg" viewBox="0 0 400 400" role="img" aria-label="Analog clock" focusable="false"></svg>
+        <div id="digital" class="digital" aria-live="polite"></div>
+        <div id="timezoneLabel" class="timezone" aria-live="polite"></div>
+      </div>
+      <aside id="adBanner" class="ad-banner" aria-label="Advertisement" hidden>
+        <div class="ad-banner__inner">Ad space • 728×90 — connect your ad provider</div>
+      </aside>
+    </main>
+
+    <div id="controlsPanel" class="controls open" role="dialog" aria-modal="false" aria-labelledby="controlsTitle">
+      <div class="controls__header">
+        <h2 id="controlsTitle">Settings</h2>
+        <button id="closeControls" class="icon-btn" aria-label="Close settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="controls__content">
+        <section class="panel" data-for-mode="normal">
+          <h3>Normal Mode</h3>
+          <label class="row"><input type="checkbox" id="toggleDigital" checked /> Show digital time</label>
+          <label class="row"><input type="checkbox" id="toggleSeconds" checked /> Show seconds</label>
+          <div class="row">
+            <span>Hour format</span>
+            <div class="segmented-group">
+              <button class="segmented segmented--active" data-hour-cycle="24">24h</button>
+              <button class="segmented" data-hour-cycle="12">12h</button>
+            </div>
+          </div>
+          <div class="row">
+            <span>Timezone</span>
+            <select id="timezoneSelect" class="select">
+              <option value="auto" selected>Auto (system)</option>
+              <option value="UTC">UTC</option>
+              <option value="Europe/London">Europe/London</option>
+              <option value="Europe/Paris">Europe/Paris</option>
+              <option value="America/New_York">America/New_York</option>
+              <option value="America/Los_Angeles">America/Los_Angeles</option>
+              <option value="Asia/Kolkata">Asia/Kolkata</option>
+              <option value="Asia/Tokyo">Asia/Tokyo</option>
+              <option value="Australia/Sydney">Australia/Sydney</option>
+            </select>
+          </div>
+          <div class="row">
+            <span>Theme</span>
+            <div class="theme-swatches" id="themeSwatches" role="listbox" aria-label="Themes"></div>
+          </div>
+          <label class="row"><input type="checkbox" id="toggleAds" /> Show ads</label>
+        </section>
+
+        <section class="panel" data-for-mode="interactive">
+          <h3>Interactive Mode</h3>
+          <label class="row"><input type="checkbox" id="iShowHour" checked /> Show hour hand</label>
+          <label class="row"><input type="checkbox" id="iShowMinute" checked /> Show minute hand</label>
+          <label class="row"><input type="checkbox" id="iShowSecond" /> Show second hand</label>
+          <label class="row"><input type="checkbox" id="iShowNumbers" checked /> Show numbers</label>
+          <label class="row"><input type="checkbox" id="iAllowDrag" checked /> Allow dragging hands</label>
+          <div class="row">
+            <span>Drag mode</span>
+            <div class="segmented-group">
+              <button class="segmented segmented--active" data-drag-mode="independent">Independent</button>
+              <button class="segmented" data-drag-mode="snapped">Snapped</button>
+            </div>
+          </div>
+          <label class="row"><input type="checkbox" id="iSpotlight" checked /> Spotlight on drag</label>
+          <div class="row gap">
+            <button id="btnReadTime" class="btn">Read time aloud</button>
+            <button id="btnSetNow" class="btn">Set to now</button>
+            <button id="btnRandomTime" class="btn">Random time</button>
+          </div>
+          <div id="quizTarget" class="quiz-target" aria-live="polite"></div>
+        </section>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+  </html>
+
+
