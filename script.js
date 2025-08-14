@@ -426,7 +426,7 @@
     });
     
     // Handle digital display based on mode
-    if (state.mode === "interactive" || state.mode === "learn" || state.mode === "quiz") {
+    if (state.mode === "interactive" || state.mode === "learn" || state.mode === "quiz" || state.mode === "games") {
       digitalEl.style.display = "none";
       timezoneEl.style.display = "none";
     } else {
@@ -692,10 +692,9 @@
         inter.time.m = minute;
         if (inter.dragMode === "snapped") {
           // move hour proportionally with minutes
-          const wholeDay = Math.floor(inter.time.h / 12) * 12;
-          const baseHour = inter.time.h % 12;
-          const newHour = wholeDay + (Math.floor(baseHour) + minute / 60);
-          inter.time.h = newHour;
+          const currentHour = Math.floor(inter.time.h) % 12;
+          const hourProgress = minute / 60;
+          inter.time.h = currentHour + hourProgress;
         }
       } else if (type === "s") {
         const sec = Math.round(deg / 6) % 60;
@@ -1234,6 +1233,33 @@
       showFeedback('⚠️', 'Storage Error', 'Your progress may not be saved');
     }
   });
+
+  // Handle AdSense loading
+  function initAds() {
+    // Check if ads are loaded and showing
+    setTimeout(() => {
+      const adBanner = document.getElementById('adBanner');
+      const adContent = adBanner?.querySelector('ins');
+      
+      if (adContent && adContent.innerHTML && adContent.innerHTML.trim() !== '') {
+        // Ads are loaded, show banner and adjust layout
+        adBanner.classList.add('has-ads');
+        document.body.classList.add('ads-on');
+      } else {
+        // No ads, keep banner hidden and show footer
+        adBanner.classList.remove('has-ads');
+        document.body.classList.remove('ads-on');
+      }
+    }, 2000); // Check after 2 seconds
+  }
+
+  // Initialize ads check
+  if (window.adsbygoogle) {
+    initAds();
+  } else {
+    // Wait for AdSense to load
+    window.addEventListener('load', initAds);
+  }
 
   // Init
   init();

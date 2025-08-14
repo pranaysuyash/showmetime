@@ -194,8 +194,33 @@ body {
 
 .select { width: 56%; padding: 8px 10px; background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; }
 
-.ad-banner { position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%); width: min(728px, 92vw); z-index: 10; }
-.ad-banner__inner { width: 100%; height: 90px; display: grid; place-items: center; color: #0b0b0b; font-weight: 600; background: repeating-linear-gradient( -45deg, #f6f7f9, #f6f7f9 10px, #eceff3 10px, #eceff3 20px ); border-radius: 12px; border: 1px dashed #a3a9b3; }
+.ad-banner { 
+  position: fixed; 
+  bottom: 8px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: min(728px, 92vw); 
+  z-index: 10;
+  /* Hide empty ad banner until ads are approved */
+  display: none;
+}
+
+.ad-banner.has-ads {
+  display: block;
+}
+
+.ad-banner__inner { 
+  width: 100%; 
+  height: 90px; 
+  display: grid; 
+  place-items: center; 
+  color: #0b0b0b; 
+  font-weight: 600; 
+  background: rgba(255,255,255,0.95);
+  border-radius: 12px; 
+  border: 1px solid rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+}
 .hand-active { filter: drop-shadow(0 0 6px var(--accent-2)); }
 [data-hi="true"] { fill: var(--accent-2) !important; }
 
@@ -835,13 +860,22 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   text-decoration: underline;
 }
 
-/* Show footer when no ads */
-body:not(.ads-on) .footer {
-  display: block;
+/* Always show footer since ads are hidden by default */
+.footer {
+  display: block !important;
 }
 
-body:not(.ads-on) .content {
+.content {
   padding-bottom: 40px;
+}
+
+/* Hide footer when ads are actually showing */
+.ads-on .footer {
+  display: none;
+}
+
+.ads-on .content {
+  padding-bottom: 110px;
 }
 
 /* Responsive adjustments */
@@ -921,7 +955,23 @@ body:not(.ads-on) .content {
     border-radius: 0;
     border-left: none;
     border-right: none;
-    max-height: calc(100vh - 56px);
+    max-height: calc(100vh - 96px);
+    padding: 12px;
+  }
+  
+  .controls__content {
+    padding: 8px 0;
+  }
+  
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .row span:first-child {
+    font-weight: 600;
+    font-size: 13px;
   }
 }
 
