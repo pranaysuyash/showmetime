@@ -134,10 +134,16 @@ body {
 /* Desktop: Content grid positioning */
 @media (min-width: 980px) {
   .content {
-    position: relative;
+    position: relative !important;
     grid-area: content;
-    inset: unset;
+    inset: unset !important;
     padding: 40px;
+    display: grid;
+    place-items: center;
+  }
+  
+  .clock-wrapper {
+    width: min(70vw, 600px) !important;
   }
 }
 .ads-on .content { padding-bottom: 110px; }
@@ -201,27 +207,30 @@ body {
 /* Desktop: Docked sidebar controls */
 @media (min-width: 980px) {
   .controls {
-    position: relative;
+    position: relative !important;
     grid-area: controls;
-    right: unset;
-    top: unset;
-    width: 100%;
-    max-height: 100%;
-    transform: none;
-    opacity: 1;
-    pointer-events: auto;
-    border-radius: 0;
-    border-right: none;
-    border-top: none;
-    border-bottom: none;
-    box-shadow: none;
-    backdrop-filter: none;
-    background: linear-gradient(180deg, rgba(22,28,50,1), rgba(14,18,32,1));
-    transition: none;
+    right: unset !important;
+    top: unset !important;
+    width: 100% !important;
+    max-height: 100% !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    border-radius: 0 !important;
+    border-right: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    background: linear-gradient(180deg, rgba(22,28,50,1), rgba(14,18,32,1)) !important;
+    transition: none !important;
+    padding: 20px !important;
   }
   
   .controls.open {
-    transform: none;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
   }
   
   /* Hide settings button on desktop */
