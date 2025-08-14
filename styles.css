@@ -590,6 +590,52 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   font-feature-settings: "tnum";
 }
 
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(8,12,24,0.9);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 0;
+  z-index: 15;
+  display: none; /* Hidden by default, shown when ads are disabled */
+}
+
+.ads-on .footer {
+  display: none; /* Hide footer when ads are present */
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* Show footer when no ads */
+body:not(.ads-on) .footer {
+  display: block;
+}
+
+body:not(.ads-on) .content {
+  padding-bottom: 40px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 560px) {
   .lesson-grid {
@@ -614,6 +660,12 @@ body.theme-contrast { --bg: #000; --panel: #0c0c0c; --text: #fff; --muted: #cfcf
   .feedback-content {
     padding: 30px 20px;
     margin: 20px;
+  }
+
+  .footer-links {
+    font-size: 10px;
+    gap: 6px;
+    padding: 0 10px;
   }
 }
 
