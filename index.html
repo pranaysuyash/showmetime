@@ -325,13 +325,12 @@
                 const adElements = document.querySelectorAll('.adsbygoogle');
                 
                 adElements.forEach(ad => {
-                  // Check if ad has content, iframe, or non-zero dimensions
+                  // Only show ad banner if there's actual ad content or iframe
                   const hasContent = ad.innerHTML.trim() !== '';
                   const hasIframe = ad.querySelector('iframe') !== null;
-                  const hasHeight = ad.offsetHeight > 0;
-                  const hasWidth = ad.offsetWidth > 0;
                   
-                  if (hasContent || hasIframe || (hasHeight && hasWidth)) {
+                  // Only trigger loaded state if there's actual ad content
+                  if (hasContent || hasIframe) {
                     adBanner.classList.add('loaded');
                   }
                 });

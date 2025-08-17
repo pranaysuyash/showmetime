@@ -1333,24 +1333,23 @@ input[type="checkbox"] {
 
 /* Ad Banner - Hidden by default until ads load */
 .ad-banner {
-  min-width: 320px; /* Minimum width for AdSense */
-  min-height: 50px; /* Minimum height for AdSense */
-  width: 100%;
-  max-width: 728px; /* Standard leaderboard max width */
-  position: absolute; /* Position off-screen but maintain dimensions */
-  left: -9999px; /* Hidden off-screen for AdSense measurement */
-  top: -9999px;
+  display: none !important; /* Completely hidden until we fix the detection */
 }
 
 .ad-banner.loaded {
-  position: static; /* Return to normal document flow */
+  display: block !important; /* Override the hidden state */
+  position: relative;
   left: auto;
   top: auto;
   background: var(--panel-glass);
   border: 1px solid var(--border);
   border-radius: var(--space-sm);
   padding: var(--space-md);
-  margin: var(--space-lg) 0;
+  margin: var(--space-lg) auto;
+  min-width: 320px;
+  min-height: 50px;
+  width: 100%;
+  max-width: 728px;
 }
 
 .ad-banner__inner {
@@ -1425,14 +1424,19 @@ input[type="checkbox"] {
 /* Ad Banner in Footer - styles defined above */
 
 .ad-banner.loaded {
-  position: static; /* Return to normal document flow */
+  display: block !important; /* Override the hidden state */
+  position: relative;
   left: auto;
   top: auto;
   background: var(--panel-glass);
   border: 1px solid var(--border);
   border-radius: var(--space-sm);
   padding: var(--space-md);
-  margin: var(--space-lg) 0;
+  margin: var(--space-lg) auto;
+  min-width: 320px;
+  min-height: 50px;
+  width: 100%;
+  max-width: 728px;
 }
 
 .ad-banner__inner {
