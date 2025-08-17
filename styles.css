@@ -1342,11 +1342,16 @@ input[type="checkbox"] {
   min-height: 50px; /* Minimum height for AdSense */
   width: 100%;
   max-width: 728px; /* Standard leaderboard max width */
-  display: none; /* Hidden until ads are loaded */
+  opacity: 0; /* Hidden but maintains dimensions for AdSense */
+  visibility: hidden; /* Hidden but maintains dimensions */
+  height: 0; /* Collapsed until ads load */
+  overflow: hidden;
 }
 
 .ad-banner.loaded {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  height: auto; /* Restore height when ads load */
 }
 
 .ad-banner__inner {
@@ -1418,18 +1423,12 @@ input[type="checkbox"] {
   }
 }
 
-/* Ad Banner in Footer */
-.ad-banner {
-  display: none; /* Hidden until ads are loaded */
-  width: 100%;
-  min-width: 320px; /* Minimum width for AdSense */
-  min-height: 50px; /* Minimum height for AdSense */
-  max-width: 728px;
-  margin: 0 auto var(--space-xs);
-}
+/* Ad Banner in Footer - styles defined above */
 
 .ad-banner.loaded {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  height: auto; /* Restore height when ads load */
 }
 
 .ad-banner__inner {
