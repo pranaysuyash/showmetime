@@ -337,6 +337,17 @@
     });
     hands.appendChild(hourHand);
     
+    // Hour hand touch target (invisible but larger area for touch)
+    const hourHandTouch = createSVGElement("line", {
+      x1: 200, y1: 200, x2: 200, y2: 120,
+      stroke: "transparent",
+      "stroke-width": 35,
+      "stroke-linecap": "round",
+      class: "clock-hand-touch hour-hand-touch",
+      style: "pointer-events: stroke; cursor: grab;"
+    });
+    hands.appendChild(hourHandTouch);
+    
     // Minute hand
     const minuteHand = createSVGElement("line", {
       x1: 200, y1: 200, x2: 200, y2: 90,
@@ -346,6 +357,17 @@
       class: "clock-hand minute-hand"
     });
     hands.appendChild(minuteHand);
+    
+    // Minute hand touch target (invisible but larger area for touch)
+    const minuteHandTouch = createSVGElement("line", {
+      x1: 200, y1: 200, x2: 200, y2: 90,
+      stroke: "transparent",
+      "stroke-width": 25,
+      "stroke-linecap": "round",
+      class: "clock-hand-touch minute-hand-touch",
+      style: "pointer-events: stroke; cursor: grab;"
+    });
+    hands.appendChild(minuteHandTouch);
     
     // Second hand
     const secondHand = createSVGElement("line", {
@@ -357,6 +379,17 @@
       class: "clock-hand second-hand"
     });
     hands.appendChild(secondHand);
+    
+    // Second hand touch target (invisible but larger area for touch)
+    const secondHandTouch = createSVGElement("line", {
+      x1: 200, y1: 200, x2: 200, y2: 70,
+      stroke: "transparent",
+      "stroke-width": 15,
+      "stroke-linecap": "round",
+      class: "clock-hand-touch second-hand-touch",
+      style: "pointer-events: stroke; cursor: grab;"
+    });
+    hands.appendChild(secondHandTouch);
     
     // Center cap
     const cap = createSVGElement("circle", {
@@ -406,7 +439,10 @@
       minuteHand,
       secondHand,
       interactiveIndicator,
-      positionIndicators: numbers.querySelectorAll('.position-indicator')
+      positionIndicators: numbers.querySelectorAll('.position-indicator'),
+      hourHandTouch,
+      minuteHandTouch,
+      secondHandTouch
     };
 
     spot = {
@@ -473,8 +509,18 @@
     element.addEventListener("mousedown", startDrag);
     element.addEventListener("touchstart", startDrag, { passive: false });
     
+    // Also enable dragging on the touch target elements
+    const touchTarget = element.nextElementSibling;
+    if (touchTarget && touchTarget.classList.contains('clock-hand-touch')) {
+      touchTarget.addEventListener("mousedown", startDrag);
+      touchTarget.addEventListener("touchstart", startDrag, { passive: false });
+    }
+    
     function startDrag(e) {
       if (state.mode !== "interactive" || !state.interactive.allowDrag) return;
+      
+      // Prevent other hands from being dragged when hands overlap
+      if (dragState.isDragging) return;
       
       e.preventDefault();
       dragState.isDragging = true;
@@ -482,6 +528,10 @@
       dragState.type = type;
       
       element.setAttribute("data-dragging", "true");
+      // Also mark touch target as dragging if it exists
+      if (touchTarget) {
+        touchTarget.setAttribute("data-dragging", "true");
+      }
       clockSvg.style.cursor = "grabbing";
     }
   }
@@ -490,47 +540,66 @@
   function handleDragMove(e) {
     if (!dragState.isDragging) return;
     
+    // Prevent default only if we're actually dragging to avoid scroll interference
     if (e.cancelable) e.preventDefault();
-    const point = getPointFromEvent(e);
-    const angle = getAngleFromPoint(point);
     
-    if (dragState.type === "h") {
-      updateHourFromAngle(angle);
-    } else if (dragState.type === "m") {
-      updateMinuteFromAngle(angle);
-    } else if (dragState.type === "s") {
-      updateSecondFromAngle(angle);
-    }
-    
-    // In snapped mode, redraw all hands to maintain proper relationships
-    // In independent mode, only update the dragged hand
-    if (state.interactive.dragMode === "snapped") {
-      drawInteractiveTime();
-    } else {
-      // Independent mode - only update the specific hand being dragged, no linkage
+    // Use requestAnimationFrame for smoother dragging
+    requestAnimationFrame(() => {
+      const point = getPointFromEvent(e);
+      const angle = getAngleFromPoint(point);
+      
       if (dragState.type === "h") {
-        const hourAngle = angle; // Use raw angle, not calculated from time
-        setRotation(components.hourHand, hourAngle);
+        updateHourFromAngle(angle);
       } else if (dragState.type === "m") {
-        const minuteAngle = angle; // Use raw angle, not calculated from time
-        setRotation(components.minuteHand, minuteAngle);
+        updateMinuteFromAngle(angle);
       } else if (dragState.type === "s") {
-        const secondAngle = angle; // Use raw angle, not calculated from time
-        setRotation(components.secondHand, secondAngle);
+        updateSecondFromAngle(angle);
       }
-    }
-    
-    if (state.interactive.spotlight) {
-      updateSpotlight(angle);
-    }
+      
+      // In snapped mode, redraw all hands to maintain proper relationships
+      // In independent mode, only update the dragged hand
+      if (state.interactive.dragMode === "snapped") {
+        drawInteractiveTime();
+      } else {
+        // Independent mode - only update the specific hand being dragged, no linkage
+        if (dragState.type === "h") {
+          const hourAngle = angle; // Use raw angle, not calculated from time
+          setRotation(components.hourHand, hourAngle);
+        } else if (dragState.type === "m") {
+          const minuteAngle = angle; // Use raw angle, not calculated from time
+          setRotation(components.minuteHand, minuteAngle);
+        } else if (dragState.type === "s") {
+          const secondAngle = angle; // Use raw angle, not calculated from time
+          setRotation(components.secondHand, secondAngle);
+        }
+      }
+      
+      if (state.interactive.spotlight) {
+        updateSpotlight(angle);
+      }
+    });
   }
 
   // Handle drag end
   function handleDragEnd() {
     if (!dragState.isDragging) return;
     
+    // Add snap feedback in snapped mode
+    if (state.interactive.dragMode === "snapped" && dragState.element) {
+      // Add a subtle animation to indicate snapping
+      dragState.element.classList.add('snap-pulse');
+      setTimeout(() => {
+        dragState.element.classList.remove('snap-pulse');
+      }, 300);
+    }
+    
     if (dragState.element) {
       dragState.element.removeAttribute("data-dragging");
+      // Also remove from touch target if it exists
+      const touchTarget = dragState.element.nextElementSibling;
+      if (touchTarget && touchTarget.classList.contains('clock-hand-touch')) {
+        touchTarget.removeAttribute("data-dragging");
+      }
     }
     
     dragState.isDragging = false;
@@ -571,6 +640,7 @@
       state.interactive.time.h = hour + (isPM && hour !== 12 ? 12 : 0);
       if (state.interactive.time.h === 24) state.interactive.time.h = 12;
     } else {
+      // In independent mode, calculate continuous hour position
       let hour = (angle / 30) % 12;
       if (hour < 0.1 && angle > 350) hour = 12; // Smooth 12 o'clock handling
       state.interactive.time.h = hour + (isPM && hour < 12 ? 12 : 0);
@@ -698,6 +768,7 @@
     const btnSetNow = document.getElementById('btnSetNow');
     const btnRandomTime = document.getElementById('btnRandomTime');
     const btnReadTime = document.getElementById('btnReadTime');
+    const btnReadTimeFloating = document.getElementById('btnReadTimeFloating');
     
     iShowHour?.addEventListener('change', () => {
       state.interactive.showHour = iShowHour.checked;
@@ -747,6 +818,7 @@
     btnSetNow?.addEventListener('click', setInteractiveToNow);
     btnRandomTime?.addEventListener('click', setInteractiveToRandom);
     btnReadTime?.addEventListener('click', speakInteractiveTime);
+    btnReadTimeFloating?.addEventListener('click', speakCurrentTime);
 
     // Learning controls
     const lessonBtns = document.querySelectorAll('.lesson-btn');
@@ -1175,7 +1247,30 @@
   function drawInteractiveTime() {
     const time = state.interactive.time;
     
-    const hourAngle = ((time.h % 12) + time.m / 60 + time.s / 3600) * 30;
+    // In snapped mode, make hour hand move gradually as minutes change
+    let hourAngle;
+    if (state.interactive.dragMode === "snapped") {
+      // Calculate hour hand position with minute influence for realistic movement
+      // When minute is exactly at 0 and second at 0, hour hand should be exactly on the hour
+      if (Math.abs(time.m - Math.round(time.m)) < 0.1 && time.s === 0) {
+        // If minute is close to a whole number and seconds is 0, position exactly
+        const wholeMinute = Math.round(time.m);
+        if (wholeMinute === 0) {
+          hourAngle = (time.h % 12) * 30; // Exactly on the hour
+        } else {
+          const exactHour = time.h % 12 + wholeMinute / 60;
+          hourAngle = exactHour * 30;
+        }
+      } else {
+        // Continuous movement for smooth dragging
+        const exactHour = time.h % 12 + time.m / 60 + time.s / 3600;
+        hourAngle = exactHour * 30; // 30 degrees per hour
+      }
+    } else {
+      // In independent mode, use the exact hour value
+      hourAngle = ((time.h % 12) + time.m / 60 + time.s / 3600) * 30;
+    }
+    
     const minuteAngle = (time.m + time.s / 60) * 6;
     const secondAngle = time.s * 6;
     
@@ -1302,6 +1397,32 @@
 
   function speakInteractiveTime() {
     const time = state.interactive.time;
+    const h = Math.floor(time.h);
+    const m = Math.floor(time.m);
+    
+    const h12 = h % 12 || 12;
+    const period = h >= 12 ? 'PM' : 'AM';
+    const timeStr = `${h12}:${String(m).padStart(2, '0')} ${period}`;
+    const text = `The time is ${timeStr}`;
+    
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  function speakCurrentTime() {
+    // Get current time based on mode
+    let time;
+    if (state.mode === 'interactive' || state.mode === 'learn' || state.mode === 'quiz') {
+      time = state.interactive.time;
+    } else {
+      time = getCurrentTime();
+    }
+    
     const h = Math.floor(time.h);
     const m = Math.floor(time.m);
     

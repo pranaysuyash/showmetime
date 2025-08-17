@@ -39,6 +39,11 @@ DEVELOPMENT.md
 *.backup
 ORIGINAL_*
 
+# Screenshots and images
+Screenshot*.png
+Screenshot*.jpg
+*.screenshot.*
+
 # AWS deployment
 .aws/
 deploy.sh
