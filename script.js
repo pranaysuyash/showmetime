@@ -1267,8 +1267,8 @@
         hourAngle = exactHour * 30; // 30 degrees per hour
       }
     } else {
-      // In independent mode, use the exact hour value
-      hourAngle = ((time.h % 12) + time.m / 60 + time.s / 3600) * 30;
+      // In independent mode, use only the hour hand's independent position
+      hourAngle = (time.h % 12) * 30;
     }
     
     const minuteAngle = (time.m + time.s / 60) * 6;
