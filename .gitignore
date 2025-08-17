@@ -29,10 +29,37 @@ yarn-debug.log*
 yarn-error.log*
 mcp-shell.log
 
-# Documentation for internal use only
+# Documentation for internal use only - Claude generated files
 IMPLEMENTATION_NOTES.md
 TODO.md
 DEVELOPMENT.md
+*_SUMMARY.md
+*_PLAN.md
+*_CHECKLIST.md
+*_STATUS.md
+*_REPORT.md
+*_GUIDE.md
+*_TASKS.md
+*_LOG.md
+*_MESSAGE.md
+*_HANDBOOK.md
+COMMIT_MESSAGE.md
+BUG_FIXES_*.md
+COMPLETE_*.md
+COMPREHENSIVE_*.md
+CURRENT_*.md
+DAILY_*.md
+DEPLOYMENT_*.md
+FINAL_*.md
+FIXES_*.md
+FIX_*.md
+FUTURE_*.md
+IMPLEMENTATION_*.md
+REVIEW_*.md
+SITE_*.md
+TESTING_*.md
+TEST_*.md
+TRACKING_*.md
 
 # Backup files
 *.bak
@@ -44,6 +71,8 @@ Screenshot*.png
 Screenshot*.jpg
 *.screenshot.*
 
+# Test files
+test-*.html
+
 # AWS deployment
 .aws/
-deploy.sh

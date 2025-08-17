@@ -19,7 +19,7 @@
       allowDrag: true,
       dragMode: "independent",
       spotlight: true,
-      time: { h: 10, m: 10, s: 0 }
+      time: { h: 10, m: 0, s: 0 }
     },
 
     learning: {
@@ -1132,7 +1132,13 @@
     const time = state.interactive.time;
     
     // Calculate exact hand angles
-    const hourAngle = ((time.h % 12) + time.m / 60 + time.s / 3600) * 30;
+    // In independent mode, hour hand should be exactly on hour markers
+    let hourAngle;
+    if (state.interactive.dragMode === "independent") {
+      hourAngle = (time.h % 12) * 30; // Exactly on hour markers
+    } else {
+      hourAngle = ((time.h % 12) + time.m / 60 + time.s / 3600) * 30; // Continuous movement
+    }
     const minuteAngle = (time.m + time.s / 60) * 6;
     const secondAngle = time.s * 6;
     

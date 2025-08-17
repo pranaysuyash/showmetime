@@ -319,27 +319,63 @@
             <script>
               (adsbygoogle = window.adsbygoogle || []).push({});
               
-              // Enhanced ad loading detection
-              function checkAdLoaded() {
+              // Comprehensive ad detection system
+              function initAdDetection() {
                 const adBanner = document.getElementById('adBanner');
-                const adElements = document.querySelectorAll('.adsbygoogle');
+                const adElement = document.querySelector('.adsbygoogle');
+                let checkCount = 0;
+                const maxChecks = 10;
                 
-                adElements.forEach(ad => {
-                  // Only show ad banner if there's actual ad content or iframe
-                  const hasContent = ad.innerHTML.trim() !== '';
-                  const hasIframe = ad.querySelector('iframe') !== null;
+                function checkAdStatus() {
+                  checkCount++;
                   
-                  // Only trigger loaded state if there's actual ad content
-                  if (hasContent || hasIframe) {
-                    adBanner.classList.add('loaded');
+                  // Check if AdSense script loaded
+                  if (typeof window.adsbygoogle === 'undefined') {
+                    // AdSense script not loaded yet, continue checking
+                    if (checkCount < maxChecks) {
+                      setTimeout(checkAdStatus, 500);
+                    } else {
+                      // Script failed to load - keep banner hidden
+                      console.log('AdSense script failed to load - keeping banner hidden');
+                    }
+                    return;
                   }
-                });
+                  
+                  // Check for actual ad content
+                  const hasIframe = adElement.querySelector('iframe') !== null;
+                  const hasContent = adElement.innerHTML.trim() !== '' && !adElement.innerHTML.includes('data-ad-status="unfilled"');
+                  
+                  // Check computed dimensions (ads have actual size when loaded)
+                  const rect = adElement.getBoundingClientRect();
+                  const hasValidDimensions = rect.width > 0 && rect.height > 0;
+                  
+                  // Check data attributes that indicate ad status
+                  const adStatus = adElement.getAttribute('data-ad-status');
+                  const isUnfilled = adStatus === 'unfilled';
+                  
+                  if (hasIframe || (hasContent && hasValidDimensions && !isUnfilled)) {
+                    // Real ad loaded - show banner
+                    adBanner.classList.add('loaded', 'has-ads');
+                  } else if (checkCount >= maxChecks) {
+                    // Timeout reached - no ads available, keep banner hidden
+                    // Don't show banner at all if no ads
+                    console.log('No ads available - keeping banner hidden');
+                  } else {
+                    // Continue checking
+                    setTimeout(checkAdStatus, 500);
+                  }
+                }
+                
+                // Start checking after a brief delay
+                setTimeout(checkAdStatus, 100);
               }
               
-              // Check multiple times with increasing delays
-              setTimeout(checkAdLoaded, 1000);
-              setTimeout(checkAdLoaded, 3000);
-              setTimeout(checkAdLoaded, 5000);
+              // Initialize detection when page loads
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initAdDetection);
+              } else {
+                initAdDetection();
+              }
             </script>
           </div>
         </aside>
