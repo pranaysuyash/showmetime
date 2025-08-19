@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Block common bot directories
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.js$
+Disallow: /*.css$
+
+# Allow important resources
+Allow: /privacy.html
+Allow: /terms.html
+Allow: /og-image.png
+Allow: /icon.png
+
+# Sitemap location
+Sitemap: https://showmetime.com/sitemap.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
