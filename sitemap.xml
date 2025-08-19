@@ -31,4 +31,36 @@
     <priority>0.3</priority>
   </url>
 
+  <!-- How It Works Guide -->
+  <url>
+    <loc>https://showmetime.com/how-it-works.html</loc>
+    <lastmod>2025-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Teacher Resources -->
+  <url>
+    <loc>https://showmetime.com/for-teachers.html</loc>
+    <lastmod>2025-08-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog: How to Teach Kids Analog Clocks -->
+  <url>
+    <loc>https://showmetime.com/blog/how-to-teach-kids-analog-clocks.html</loc>
+    <lastmod>2025-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog: Best Clock Apps Review -->
+  <url>
+    <loc>https://showmetime.com/blog/best-free-clock-apps-kids.html</loc>
+    <lastmod>2025-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
