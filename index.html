@@ -73,6 +73,35 @@
         'anonymize_ip': true,
         'cookie_flags': 'SameSite=Strict;Secure'
       });
+
+      // Listen for Google Funding Choices consent updates
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.__gfcType === 'consent') {
+          // Update consent based on Google Funding Choices response
+          if (event.data.consentData) {
+            const consentData = event.data.consentData;
+            gtag('consent', 'update', {
+              'analytics_storage': consentData.analytics_storage || 'denied',
+              'ad_storage': consentData.ad_storage || 'denied', 
+              'ad_user_data': consentData.ad_user_data || 'denied',
+              'ad_personalization': consentData.ad_personalization || 'denied'
+            });
+          }
+        }
+      });
+
+      // Also listen for __gfc_consent event from Google Funding Choices
+      window.addEventListener('__gfc_consent', function(event) {
+        if (event.detail && event.detail.consentData) {
+          const consent = event.detail.consentData;
+          gtag('consent', 'update', {
+            'analytics_storage': consent.analyticsStorage ? 'granted' : 'denied',
+            'ad_storage': consent.adStorage ? 'granted' : 'denied',
+            'ad_user_data': consent.adUserData ? 'granted' : 'denied', 
+            'ad_personalization': consent.adPersonalization ? 'granted' : 'denied'
+          });
+        }
+      });
     </script>
     
     <!-- Microsoft Clarity -->
