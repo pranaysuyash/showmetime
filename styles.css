@@ -113,6 +113,7 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-display: swap;
   font-size: var(--text-base);
   line-height: 1.5;
   color: var(--text);
@@ -513,11 +514,11 @@ body::after {
   margin-bottom: var(--space-xl);
 }
 
-.panel h3 {
+.controls-panel h3 {
   font-size: var(--text-lg);
   font-weight: 600;
   margin-top: 0;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
   padding-bottom: var(--space-sm);
   border-bottom: 1px solid var(--border);
 }
@@ -1446,6 +1447,16 @@ input[type="checkbox"] {
 }
 
 /* Ad Banner in Footer - styles defined above */
+
+/* AdSense layout shift prevention */
+.adsbygoogle {
+  display: block;
+  min-height: 90px;
+}
+
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
+}
 
 /* Hidden Utility */
 .hidden {
