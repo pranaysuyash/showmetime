@@ -1,31 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 144" width="144" height="144">
-  <!-- Background circle -->
-  <circle cx="72" cy="72" r="70" fill="#0b1020" stroke="#4f7fff" stroke-width="4"/>
+  <defs>
+    <linearGradient id="clockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="72" cy="72" r="72" fill="url(#clockGradient)"/>
   
   <!-- Clock face -->
-  <circle cx="72" cy="72" r="60" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+  <circle cx="72" cy="72" r="58" fill="white" stroke="#e5e7eb" stroke-width="2"/>
   
   <!-- Hour markers -->
-  <g stroke="#ffffff" stroke-width="2" opacity="0.7">
-    <!-- 12 o'clock -->
-    <line x1="72" y1="20" x2="72" y2="30"/>
-    <!-- 3 o'clock -->
-    <line x1="124" y1="72" x2="114" y2="72"/>
-    <!-- 6 o'clock -->
-    <line x1="72" y1="124" x2="72" y2="114"/>
-    <!-- 9 o'clock -->
-    <line x1="20" y1="72" x2="30" y2="72"/>
+  <g stroke="#374151" stroke-width="3" stroke-linecap="round">
+    <line x1="72" y1="22" x2="72" y2="32"/>
+    <line x1="122" y1="72" x2="112" y2="72"/>
+    <line x1="72" y1="122" x2="72" y2="112"/>
+    <line x1="22" y1="72" x2="32" y2="72"/>
   </g>
   
   <!-- Numbers -->
-  <text x="72" y="30" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="bold" dy="5">12</text>
+  <text x="72" y="32" text-anchor="middle" fill="#1f2937" font-family="system-ui, sans-serif" font-size="16" font-weight="600">12</text>
+  <text x="112" y="77" text-anchor="middle" fill="#1f2937" font-family="system-ui, sans-serif" font-size="16" font-weight="600">3</text>
+  <text x="72" y="117" text-anchor="middle" fill="#1f2937" font-family="system-ui, sans-serif" font-size="16" font-weight="600">6</text>
+  <text x="32" y="77" text-anchor="middle" fill="#1f2937" font-family="system-ui, sans-serif" font-size="16" font-weight="600">9</text>
   
-  <!-- Hour hand pointing to 10 -->
-  <line x1="72" y1="72" x2="55" y2="45" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
-  
-  <!-- Minute hand pointing to 12 -->
-  <line x1="72" y1="72" x2="72" y2="35" stroke="#4f7fff" stroke-width="4" stroke-linecap="round"/>
+  <!-- Clock hands showing 10:10 -->
+  <line x1="72" y1="72" x2="58" y2="50" stroke="#374151" stroke-width="5" stroke-linecap="round"/>
+  <line x1="72" y1="72" x2="86" y2="50" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"/>
   
   <!-- Center dot -->
-  <circle cx="72" cy="72" r="6" fill="#4f7fff"/>
+  <circle cx="72" cy="72" r="4" fill="#4f46e5"/>
 </svg>
