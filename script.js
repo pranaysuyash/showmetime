@@ -82,9 +82,6 @@
     // Initialize learning system
     if (window.TimeLearningSystem) {
       learningSystem = new window.TimeLearningSystem();
-      console.log('TimeLab learning system initialized');
-    } else {
-      console.warn('TimeLearningSystem not found - learning features disabled');
     }
 
     // Load saved state
@@ -934,7 +931,6 @@
         e.preventDefault();
         e.stopPropagation();
         
-        console.log('Theme clicked:', theme); // Debug log
         state.theme = theme;
         document.body.className = `theme-${theme}`;
         applyTheme(theme); // Apply theme to clock colors
