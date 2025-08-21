@@ -73,6 +73,17 @@ Screenshot*.jpg
 
 # Test files
 test-*.html
+performance-test.js
 
 # AWS deployment
 .aws/
+
+# Performance and build artifacts
+*.min.js
+*.min.css
+build/
+dist/
+
+# Cache and temporary files
+.cache/
+node_modules/
