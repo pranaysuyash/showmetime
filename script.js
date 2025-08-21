@@ -230,19 +230,7 @@
       text.textContent = String(i);
       numbers.appendChild(text);
       
-      // Position indicator for interactive mode
-      const indicator = createSVGElement("circle", {
-        cx: x, cy: y - 10,
-        r: 8,
-        fill: "none",
-        stroke: "#00d4ff",
-        "stroke-width": 2,
-        "stroke-dasharray": "3 3",
-        opacity: 0,
-        class: "position-indicator",
-        "data-hour": i
-      });
-      numbers.appendChild(indicator);
+      // Static position indicators removed - using dynamic indicators only
     }
     clockSvg.appendChild(numbers);
 
