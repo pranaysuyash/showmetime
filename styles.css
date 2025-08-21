@@ -270,12 +270,17 @@ body::after {
 
 .clock-hand-touch {
   pointer-events: stroke;
-  cursor: grab;
   vector-effect: non-scaling-stroke;
   stroke: transparent !important;
 }
 
-.clock-hand-touch:hover {
+/* Only show grab cursor in interactive mode */
+[data-mode="interactive"] .clock-hand-touch {
+  cursor: grab;
+}
+
+/* Only show hover effects in interactive mode */
+[data-mode="interactive"] .clock-hand-touch:hover:not([style*="visibility: hidden"]) {
   cursor: grab;
   /* Add a subtle visual indicator when hovering over touch targets */
   stroke: rgba(255, 255, 255, 0.1) !important;
@@ -301,7 +306,7 @@ body::after {
   transition: none !important; /* No transition to prevent jumping */
 }
 
-.clock-hand:hover {
+[data-mode="interactive"] .clock-hand:hover:not([style*="visibility: hidden"]) {
   filter: drop-shadow(0 0 10px var(--accent-2));
 }
 
@@ -354,7 +359,7 @@ body::after {
   /* Remove transition to prevent jumping at 12 o'clock */
 }
 
-.clock-hand:hover {
+[data-mode="interactive"] .clock-hand:hover:not([style*="visibility: hidden"]) {
   filter: drop-shadow(0 0 15px currentColor);
   stroke-width: calc(var(--stroke-width, 4) + 2) !important;
   cursor: grab;

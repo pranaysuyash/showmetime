@@ -110,6 +110,9 @@
     updateLearningProgress();
     updateQuizStats();
 
+    // Set initial data-mode attribute for CSS selectors
+    document.body.setAttribute('data-mode', state.mode);
+
     // Ensure digital display visibility matches state
     if (digitalEl) {
       digitalEl.style.display = state.showDigital ? 'block' : 'none';
@@ -438,6 +441,14 @@
     function startDrag(e) {
       if (state.mode !== "interactive" || !state.interactive.allowDrag) return;
       
+      // Prevent dragging hidden hands
+      if (element.style.visibility === 'hidden') return;
+      
+      // Check specific hand visibility settings
+      if (type === 'hour' && !state.interactive.showHour) return;
+      if (type === 'minute' && !state.interactive.showMinute) return;
+      if (type === 'second' && !state.interactive.showSecond) return;
+      
       // Prevent other hands from being dragged when hands overlap
       if (dragState.isDragging) return;
       
@@ -623,6 +634,10 @@
       btn.addEventListener('click', () => {
         state.mode = btn.dataset.mode;
         modeBtns.forEach(b => b.classList.toggle('segmented--active', b === btn));
+        
+        // Set data-mode attribute for CSS selectors
+        document.body.setAttribute('data-mode', state.mode);
+        
         updatePanelsForMode();
         
         // Show/hide keyboard help for interactive mode
