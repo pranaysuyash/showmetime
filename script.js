@@ -66,87 +66,6 @@
     type: null
   };
 
-  // Lesson content
-  const LESSONS = {
-    "oclock": {
-      title: "O'Clock Times",
-      icon: "🕐",
-      steps: [
-        "When the minute hand points to 12, we say 'o'clock'",
-        "The hour hand points to the number for that hour",
-        "Try setting the clock to 3 o'clock!"
-      ],
-      practice: [
-        { h: 3, m: 0 },
-        { h: 7, m: 0 },
-        { h: 12, m: 0 }
-      ]
-    },
-    "half-past": {
-      title: "Half Past",
-      icon: "🕕",
-      steps: [
-        "Half past means 30 minutes after the hour",
-        "The minute hand points to 6",
-        "Try setting the clock to half past 2!"
-      ],
-      practice: [
-        { h: 2, m: 30 },
-        { h: 5, m: 30 },
-        { h: 9, m: 30 }
-      ]
-    },
-    "quarter": {
-      title: "Quarter Past/To",
-      icon: "🕒",
-      steps: [
-        "Quarter past means 15 minutes after",
-        "Quarter to means 15 minutes before",
-        "Try both quarter past and quarter to!"
-      ],
-      practice: [
-        { h: 3, m: 15 },
-        { h: 6, m: 45 },
-        { h: 10, m: 15 }
-      ]
-    },
-    "five-minute": {
-      title: "5-Minute Times",
-      icon: "🕓",
-      steps: [
-        "Each number represents 5 minutes",
-        "Count by 5s around the clock",
-        "Practice different 5-minute times!"
-      ],
-      practice: [
-        { h: 4, m: 20 },
-        { h: 8, m: 35 },
-        { h: 11, m: 50 }
-      ]
-    }
-  };
-
-  // Quiz questions
-  const QUIZ_QUESTIONS = {
-    easy: [
-      { h: 3, m: 0, options: ["3:00", "4:00", "2:00", "12:00"], correct: 0 },
-      { h: 6, m: 0, options: ["5:00", "6:00", "7:00", "12:00"], correct: 1 },
-      { h: 9, m: 0, options: ["8:00", "10:00", "9:00", "3:00"], correct: 2 },
-      { h: 12, m: 0, options: ["12:00", "1:00", "11:00", "6:00"], correct: 0 }
-    ],
-    medium: [
-      { h: 2, m: 30, options: ["2:30", "2:15", "3:00", "2:45"], correct: 0 },
-      { h: 7, m: 15, options: ["7:30", "7:15", "7:45", "8:15"], correct: 1 },
-      { h: 4, m: 45, options: ["4:15", "5:15", "4:45", "4:30"], correct: 2 },
-      { h: 10, m: 30, options: ["10:15", "11:00", "10:45", "10:30"], correct: 3 }
-    ],
-    hard: [
-      { h: 1, m: 25, options: ["1:25", "1:20", "1:30", "1:35"], correct: 0 },
-      { h: 5, m: 40, options: ["5:35", "5:40", "5:45", "6:40"], correct: 1 },
-      { h: 8, m: 55, options: ["8:50", "9:55", "8:55", "8:45"], correct: 2 },
-      { h: 11, m: 10, options: ["11:05", "11:15", "12:10", "11:10"], correct: 3 }
-    ]
-  };
 
   // Initialize
   function init() {
@@ -1780,6 +1699,18 @@
   function startAnimation() {
     requestAnimationFrame(tick);
   }
+
+  // Expose core functions globally for modules
+  window.TimeLab = {
+    state,
+    showFeedback,
+    updateLearningProgress: () => {
+      if (window.TimeLabLearning) {
+        window.TimeLabLearning.updateLearningProgress();
+      }
+    },
+    updateQuizStats
+  };
 
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {

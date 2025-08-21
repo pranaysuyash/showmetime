@@ -646,6 +646,28 @@
 
     <script src="./learning-system.js" defer></script>
     <script src="./script.js" defer></script>
+    <!-- Lazy load modules on demand -->
+    <script>
+      // Lazy load modules when user enters specific modes
+      const moduleLoaders = {
+        learn: () => import('./modules/learning.js'),
+        quiz: () => import('./modules/quiz.js'), 
+        games: () => import('./modules/games.js')
+      };
+      
+      // Load module when mode is activated
+      document.addEventListener('DOMContentLoaded', () => {
+        const modeButtons = document.querySelectorAll('[data-mode]');
+        modeButtons.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const mode = e.target.dataset.mode;
+            if (moduleLoaders[mode] && !window[`TimeLab${mode.charAt(0).toUpperCase() + mode.slice(1)}`]) {
+              moduleLoaders[mode]().catch(console.error);
+            }
+          });
+        });
+      });
+    </script>
   </body>
   </html>
 
