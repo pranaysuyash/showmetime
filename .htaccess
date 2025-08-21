@@ -19,8 +19,8 @@
 <IfModule mod_expires.c>
     ExpiresActive on
     
-    # Cache HTML for 1 hour (frequently updated)
-    ExpiresByType text/html "access plus 1 hour"
+    # Cache HTML for 6 hours with validation
+    ExpiresByType text/html "access plus 6 hours"
     
     # Cache CSS and JS for 1 year (with versioning)
     ExpiresByType text/css "access plus 1 year"
@@ -52,9 +52,9 @@
         Header set Cache-Control "public, max-age=31536000"
     </FilesMatch>
     
-    # Cache HTML with shorter duration
+    # Cache HTML with validation
     <FilesMatch "\.html$">
-        Header set Cache-Control "public, max-age=3600"
+        Header set Cache-Control "public, max-age=21600, must-revalidate"
     </FilesMatch>
     
     # Security headers
