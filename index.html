@@ -18,13 +18,13 @@
     <meta name="googlebot" content="index, follow" />
     <meta name="google" content="notranslate" />
     <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="TimeLab Clock" />
     <meta name="application-name" content="TimeLab" />
     <meta name="msapplication-TileColor" content="#0b1020" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <meta name="category" content="Education" />
     <meta name="coverage" content="Worldwide" />
@@ -253,8 +253,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" /></noscript>
-    <!-- Preload critical font files -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Font will be loaded via CSS preload -->
     <!-- Critical CSS for above-the-fold content -->
     <style>
       body{margin:0;padding:0;background:#0a0e27;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden;width:100vw}
@@ -678,6 +677,7 @@
     </footer>
 
 
+    <script src="./learning-system.js" defer></script>
     <script src="./script.js" defer></script>
   </body>
   </html>
