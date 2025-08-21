@@ -449,7 +449,7 @@ body::after {
   position: relative;
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 980px) {
   .controls {
     position: static !important;
     transform: none !important;
