@@ -444,11 +444,11 @@ body::after {
   border-left: 1px solid var(--border);
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg) var(--space-lg) var(--space-lg);
   position: relative;
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1200px) {
   .controls {
     position: static !important;
     transform: none !important;
@@ -479,7 +479,7 @@ body::after {
 /* Close Button (Mobile) */
 .close-btn {
   position: absolute;
-  top: var(--space-md);
+  top: var(--space-xs);
   right: var(--space-md);
   width: 32px;
   height: 32px;
@@ -516,6 +516,7 @@ body::after {
 .panel h3 {
   font-size: var(--text-lg);
   font-weight: 600;
+  margin-top: 0;
   margin-bottom: var(--space-md);
   padding-bottom: var(--space-sm);
   border-bottom: 1px solid var(--border);
