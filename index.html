@@ -59,12 +59,24 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       
-      // Consent Mode V2 - Set defaults before config
+      // Consent Mode V2 - Set region-specific defaults before config
+      // Deny consent by default for users in the EEA & UK
       gtag('consent', 'default', {
         'analytics_storage': 'denied',
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied',
+        'functionality_storage': 'granted',
+        'security_storage': 'granted',
+        'region': ['AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'LV', 'LI', 'LT', 'LU', 'MT', 'NL', 'NO', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'GB']
+      });
+
+      // Grant consent by default for all other regions
+      gtag('consent', 'default', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'granted',
+        'ad_user_data': 'granted',
+        'ad_personalization': 'granted',
         'functionality_storage': 'granted',
         'security_storage': 'granted'
       });
