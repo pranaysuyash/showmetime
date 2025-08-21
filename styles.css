@@ -456,11 +456,17 @@ body::after {
 
 @media (min-width: 980px) {
   .controls {
-    position: static !important;
-    transform: none !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    display: block !important;
+    position: relative;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    display: block;
+    top: unset;
+    right: unset;
+    bottom: unset;
+    width: auto;
+    z-index: auto;
+    box-shadow: none;
   }
 }
 
@@ -1523,9 +1529,7 @@ body {
 
 /* FAQ and Resources styles removed - moved to separate pages */
 
-.ad-banner {
-  min-height: 100px;
-}
+/* Ad banner min-height removed - causes black blocks */
 
 /* Accessibility improvements */
 /* Enhanced focus states for all interactive elements */
