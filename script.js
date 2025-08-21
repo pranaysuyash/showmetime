@@ -624,6 +624,17 @@
         state.mode = btn.dataset.mode;
         modeBtns.forEach(b => b.classList.toggle('segmented--active', b === btn));
         updatePanelsForMode();
+        
+        // Show/hide keyboard help for interactive mode
+        const keyboardHelp = document.getElementById('keyboardHelp');
+        if (keyboardHelp) {
+          if (state.mode === 'interactive') {
+            keyboardHelp.classList.add('show');
+            setTimeout(() => keyboardHelp.classList.remove('show'), 5000);
+          } else {
+            keyboardHelp.classList.remove('show');
+          }
+        }
       });
     });
 
@@ -675,6 +686,63 @@
     
     // Theme swatches
     renderThemeSwatches();
+
+    // Keyboard accessibility for interactive mode
+    document.addEventListener('keydown', (e) => {
+      if (state.mode !== 'interactive') return;
+      
+      const step = e.shiftKey ? 1 : 5; // Fine control with Shift
+      let changed = false;
+      
+      switch(e.key) {
+        case 'ArrowUp':
+        case 'ArrowRight':
+          if (e.ctrlKey || e.metaKey) {
+            // Hour hand control
+            state.interactive.time.h = (state.interactive.time.h + step/5) % 12;
+            changed = true;
+          } else {
+            // Minute hand control  
+            state.interactive.time.m = (state.interactive.time.m + step) % 60;
+            changed = true;
+          }
+          break;
+        case 'ArrowDown':
+        case 'ArrowLeft':
+          if (e.ctrlKey || e.metaKey) {
+            // Hour hand control
+            state.interactive.time.h = (state.interactive.time.h - step/5 + 12) % 12;
+            changed = true;
+          } else {
+            // Minute hand control
+            state.interactive.time.m = (state.interactive.time.m - step + 60) % 60;
+            changed = true;
+          }
+          break;
+        case 'h':
+        case 'H':
+          // Quick hour adjustment
+          if (!e.ctrlKey && !e.metaKey) {
+            state.interactive.time.h = (state.interactive.time.h + 1) % 12;
+            changed = true;
+          }
+          break;
+        case 'm':
+        case 'M':
+          // Quick minute adjustment
+          if (!e.ctrlKey && !e.metaKey) {
+            state.interactive.time.m = (state.interactive.time.m + 15) % 60;
+            changed = true;
+          }
+          break;
+      }
+      
+      if (changed) {
+        e.preventDefault();
+        renderInteractiveTime();
+        showFeedback('⌨️', `Time: ${Math.floor(state.interactive.time.h)}:${String(Math.floor(state.interactive.time.m)).padStart(2, '0')}`);
+      }
+    });
 
     // Interactive controls
     const iShowHour = document.getElementById('iShowHour');

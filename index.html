@@ -257,16 +257,28 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body class="theme-blue">
+    <!-- Skip to main content for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Keyboard help for interactive mode -->
+    <div class="keyboard-help" id="keyboardHelp">
+      <div><strong>Keyboard Controls:</strong></div>
+      <div>Arrow keys: Move minute hand</div>
+      <div>Ctrl/Cmd + Arrows: Move hour hand</div>
+      <div>H: Next hour, M: +15 minutes</div>
+      <div>Shift: Fine control (1-minute steps)</div>
+    </div>
+    
     <header class="toolbar" role="banner">
       <div class="toolbar__left">
         <h1 class="brand" aria-label="TimeLab">TimeLab</h1>
       </div>
-      <div class="toolbar__center" role="tablist" aria-label="Mode selector">
-        <button class="segmented segmented--active" data-mode="normal" role="tab" aria-selected="true" id="tab-normal" aria-controls="panel-normal">Normal</button>
-        <button class="segmented" data-mode="interactive" role="tab" aria-selected="false" id="tab-interactive" aria-controls="panel-interactive">Interactive</button>
-        <button class="segmented" data-mode="learn" role="tab" aria-selected="false" id="tab-learn" aria-controls="panel-learn">Learn</button>
-        <button class="segmented" data-mode="quiz" role="tab" aria-selected="false" id="tab-quiz" aria-controls="panel-quiz">Quiz</button>
-        <button class="segmented games-tab" data-mode="games" role="tab" aria-selected="false" id="tab-games" aria-controls="panel-games">Games</button>
+      <div class="toolbar__center" role="tablist" aria-label="Clock mode selector - Switch between different learning modes">
+        <button class="segmented segmented--active" data-mode="normal" role="tab" aria-selected="true" id="tab-normal" aria-controls="panel-normal" aria-label="Normal mode - View current time">Normal</button>
+        <button class="segmented" data-mode="interactive" role="tab" aria-selected="false" id="tab-interactive" aria-controls="panel-interactive" aria-label="Interactive mode - Set time manually with draggable hands or keyboard controls">Interactive</button>
+        <button class="segmented" data-mode="learn" role="tab" aria-selected="false" id="tab-learn" aria-controls="panel-learn" aria-label="Learn mode - Guided lessons on reading analog clocks">Learn</button>
+        <button class="segmented" data-mode="quiz" role="tab" aria-selected="false" id="tab-quiz" aria-controls="panel-quiz" aria-label="Quiz mode - Test your time-reading skills">Quiz</button>
+        <button class="segmented games-tab" data-mode="games" role="tab" aria-selected="false" id="tab-games" aria-controls="panel-games" aria-label="Games mode - Fun time-learning activities">Games</button>
       </div>
       <div class="toolbar__right">
         <button id="toggleControls" class="icon-btn" aria-haspopup="dialog" aria-expanded="true" aria-controls="controlsPanel" title="Settings" aria-label="Open settings">
@@ -275,7 +287,7 @@
       </div>
     </header>
 
-    <main class="content" role="main">
+    <main class="content" role="main" id="main-content">
       <div class="clock-container">
         <div id="clockWrapper" class="clock-wrapper">
           <svg id="clockSvg" viewBox="0 0 400 400" role="img" aria-label="Analog clock" focusable="false"></svg>
@@ -662,7 +674,13 @@
           btn.addEventListener('click', (e) => {
             const mode = e.target.dataset.mode;
             if (moduleLoaders[mode] && !window[`TimeLab${mode.charAt(0).toUpperCase() + mode.slice(1)}`]) {
-              moduleLoaders[mode]().catch(console.error);
+              moduleLoaders[mode]().catch(error => {
+                console.error(`Failed to load ${mode} module:`, error);
+                // Graceful fallback - show user-friendly message
+                if (window.TimeLab && window.TimeLab.showFeedback) {
+                  window.TimeLab.showFeedback('⚠️', `${mode.charAt(0).toUpperCase() + mode.slice(1)} mode temporarily unavailable`);
+                }
+              });
             }
           });
         });
