@@ -428,7 +428,7 @@ body::after {
 /* Timezone */
 .timezone {
   position: absolute;
-  top: var(--space-md);
+  top: -50px;
   left: 50%;
   transform: translateX(-50%);
   padding: var(--space-sm) var(--space-lg);
@@ -1268,7 +1268,7 @@ input[type="checkbox"] {
   }
   
   .timezone {
-    top: var(--space-sm);
+    top: -40px;
     padding: var(--space-xs) var(--space-md);
   }
   
@@ -1312,7 +1312,7 @@ input[type="checkbox"] {
   }
   
   .timezone {
-    top: var(--space-xs);
+    top: -30px;
   }
 }
 
