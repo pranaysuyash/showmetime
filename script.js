@@ -206,33 +206,35 @@
     clockSvg.appendChild(numberTicks);
 
 
-    // Numbers
-    const numbers = createSVGElement("g", { id: "numbers" });
-    for (let i = 1; i <= 12; i++) {
-      const angle = (i / 12) * 2 * Math.PI;
-      const r = 140; // slightly larger radius for better symmetry
-      const x = 200 + r * Math.sin(angle);
-      const y = 200 - r * Math.cos(angle) + 4; // subtle vertical optical correction
-      
-      const text = createSVGElement("text", {
-        x, y,
-        "text-anchor": "middle",
-        "dominant-baseline": "middle",
-        "font-size": 26,
-        "font-weight": 700,
-        fill: "#ffffff",
-        class: "clock-number",
-        "data-number": i
-      });
-      text.textContent = String(i);
-      numbers.appendChild(text);
-      
-      // Static position indicators removed - using dynamic indicators only
+    // Numbers (use pre-rendered numbers from HTML for faster LCP)
+    const numbers = document.getElementById("numbers") || createSVGElement("g", { id: "numbers" });
+    
+    // Only create numbers if they don't exist in HTML (fallback)
+    if (!numbers.children.length) {
+      for (let i = 1; i <= 12; i++) {
+        const angle = (i / 12) * 2 * Math.PI;
+        const r = 140; // slightly larger radius for better symmetry
+        const x = 200 + r * Math.sin(angle);
+        const y = 200 - r * Math.cos(angle) + 4; // subtle vertical optical correction
+        
+        const text = createSVGElement("text", {
+          x, y,
+          "text-anchor": "middle",
+          "dominant-baseline": "middle",
+          "font-size": 26,
+          "font-weight": 700,
+          fill: "#ffffff",
+          class: "clock-number",
+          "data-number": i
+        });
+        text.textContent = String(i);
+        numbers.appendChild(text);
+      }
+      clockSvg.appendChild(numbers);
     }
-    clockSvg.appendChild(numbers);
 
-    // Clock hands group
-    const hands = createSVGElement("g", { id: "hands" });
+    // Clock hands group (use existing or create new)
+    const hands = document.getElementById("hands") || createSVGElement("g", { id: "hands" });
     
     // Hour hand
     const hourHand = createSVGElement("line", {
