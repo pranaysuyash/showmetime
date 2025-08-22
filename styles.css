@@ -1950,3 +1950,189 @@ button:disabled {
     min-width: unset;
   }
 }
+
+/* ===================================
+   GAMES STYLES
+   =================================== */
+
+.race-game,
+.detective-game,
+.memory-game {
+  padding: var(--space-xl);
+  text-align: center;
+}
+
+.game-instructions {
+  margin-bottom: var(--space-lg);
+}
+
+.game-instructions p {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.game-instructions .timer {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.game-controls {
+  margin: var(--space-xl) 0;
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.game-btn {
+  padding: var(--space-md) var(--space-xl);
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--accent-gradient);
+  color: var(--text);
+  font-size: var(--text-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+}
+
+.game-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 127, 255, 0.3);
+}
+
+.game-btn.secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.game-btn.secondary:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+}
+
+.game-result {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  min-height: 60px;
+}
+
+.game-result .success {
+  background: rgba(0, 214, 143, 0.1);
+  border: 1px solid rgba(0, 214, 143, 0.3);
+  color: var(--success);
+}
+
+.game-result .error {
+  background: rgba(255, 92, 124, 0.1);
+  border: 1px solid rgba(255, 92, 124, 0.3);
+  color: var(--danger);
+}
+
+.game-result h5 {
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--text-xl);
+}
+
+.game-result p {
+  margin: var(--space-sm) 0;
+  font-size: var(--text-base);
+}
+
+/* Detective Game Specific */
+.clues-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+}
+
+.clue {
+  padding: var(--space-lg);
+  background: var(--panel-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--text-lg);
+  backdrop-filter: blur(10px);
+}
+
+.detective-answer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  margin: var(--space-xl) 0;
+  flex-wrap: wrap;
+}
+
+.detective-answer label {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.detective-answer select {
+  padding: var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: var(--text-lg);
+  min-width: 80px;
+}
+
+.detective-answer span {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+/* Memory Game Specific */
+.memory-display {
+  margin: var(--space-2xl) 0;
+  padding: var(--space-2xl);
+  background: var(--panel-glass);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(15px);
+}
+
+.memory-time {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(79, 127, 255, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .race-game,
+  .detective-game,
+  .memory-game {
+    padding: var(--space-lg);
+  }
+  
+  .game-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .game-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .clues-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .detective-answer {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .memory-time {
+    font-size: var(--text-3xl);
+  }
+}
