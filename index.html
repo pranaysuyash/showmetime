@@ -647,9 +647,32 @@
       });
     </script>
     
-    <!-- Third-party scripts moved here for better performance -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4892840738780526" crossorigin="anonymous"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2QWTP53NMH"></script>
+    <!-- Lazy-loaded third-party scripts for optimal performance -->
+    <script>
+      // Lazy load third-party scripts after user interaction or 3 seconds
+      function loadThirdPartyScripts() {
+        // Load AdSense
+        const adsenseScript = document.createElement('script');
+        adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4892840738780526';
+        adsenseScript.async = true;
+        adsenseScript.crossOrigin = 'anonymous';
+        document.head.appendChild(adsenseScript);
+        
+        // Load Google Analytics
+        const gtag = document.createElement('script');
+        gtag.src = 'https://www.googletagmanager.com/gtag/js?id=G-2QWTP53NMH';
+        gtag.async = true;
+        document.head.appendChild(gtag);
+      }
+      
+      // Load on first user interaction
+      ['click', 'scroll', 'keydown', 'touchstart'].forEach(event => {
+        document.addEventListener(event, loadThirdPartyScripts, { once: true, passive: true });
+      });
+      
+      // Fallback: load after 3 seconds if no interaction
+      setTimeout(loadThirdPartyScripts, 3000);
+    </script>
   </body>
   </html>
 
