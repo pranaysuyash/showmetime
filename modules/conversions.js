@@ -289,27 +289,53 @@
     if (!worldClocksContainer) return;
     
     const cities = [
-      { name: 'New York', tz: 'EST' },
-      { name: 'Los Angeles', tz: 'PST' },
-      { name: 'London', tz: 'GMT' },
-      { name: 'Tokyo', tz: 'JST' },
-      { name: 'Sydney', tz: 'AEST' },
-      { name: 'Mumbai', tz: 'IST' }
+      { name: 'New York', tz: 'EST', flag: '🇺🇸' },
+      { name: 'Los Angeles', tz: 'PST', flag: '🇺🇸' },
+      { name: 'London', tz: 'GMT', flag: '🇬🇧' },
+      { name: 'Paris', tz: 'CET', flag: '🇫🇷' },
+      { name: 'Tokyo', tz: 'JST', flag: '🇯🇵' },
+      { name: 'Sydney', tz: 'AEST', flag: '🇦🇺' },
+      { name: 'Mumbai', tz: 'IST', flag: '🇮🇳' },
+      { name: 'Beijing', tz: 'CST_China', flag: '🇨🇳' },
+      { name: 'Dubai', tz: 'UTC', flag: '🇦🇪' },
+      { name: 'São Paulo', tz: 'UTC', flag: '🇧🇷' }
     ];
     
     const now = new Date();
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
     
     worldClocksContainer.innerHTML = cities.map(city => {
-      const converted = TimeConverters.convertTimezone(currentHour, currentMinute, 'UTC', city.tz);
+      const cityTime = new Date();
+      // Simple timezone offset calculation for demo
+      const offsets = {
+        'EST': -5, 'PST': -8, 'GMT': 0, 'CET': 1, 'JST': 9, 
+        'AEST': 10, 'IST': 5.5, 'CST_China': 8, 'UTC': 4
+      };
+      
+      const offset = offsets[city.tz] || 0;
+      cityTime.setHours(cityTime.getUTCHours() + offset);
+      
+      const timeStr = cityTime.toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+      
+      const isDayTime = cityTime.getHours() >= 6 && cityTime.getHours() < 20;
+      
       return `
-        <div class="world-clock-item">
-          <div class="city-name">${city.name}</div>
-          <div class="city-time">${converted.formatted}</div>
+        <div class="world-clock-item ${isDayTime ? 'day' : 'night'}">
+          <div class="city-header">
+            <span class="city-flag">${city.flag}</span>
+            <span class="city-name">${city.name}</span>
+          </div>
+          <div class="city-time">${timeStr}</div>
+          <div class="city-period">${isDayTime ? '☀️ Day' : '🌙 Night'}</div>
         </div>
       `;
     }).join('');
+    
+    // Update every minute
+    setTimeout(updateWorldClocks, 60000);
   }
 
   // Extend TimeConverters with UI functions
@@ -392,10 +418,183 @@
     }
   };
 
+  // Unix timestamp converter interface
+  function startTimestamp() {
+    const gameArea = document.getElementById('gameArea');
+    if (!gameArea) return;
+    
+    gameArea.classList.add('active');
+    gameArea.innerHTML = `
+      <div class="timestamp-tool">
+        <h4>⏱️ Unix Timestamp Converter</h4>
+        
+        <div class="converter-section">
+          <h5>Current Timestamp</h5>
+          <div class="current-timestamp">
+            <div class="timestamp-display">
+              <span id="currentTimestamp">${Math.floor(Date.now() / 1000)}</span>
+              <button onclick="copyToClipboard('currentTimestamp')" class="copy-btn" title="Copy to clipboard">📋</button>
+            </div>
+            <div class="timestamp-human">${new Date().toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div class="converter-section">
+          <h5>Unix to Human Readable</h5>
+          <div class="timestamp-converter">
+            <input type="number" id="unixInput" placeholder="1693430400" value="${Math.floor(Date.now() / 1000)}">
+            <button onclick="convertFromUnix()" class="convert-btn">Convert</button>
+          </div>
+          <div id="unixResult" class="timestamp-results">
+            <div class="result-item">
+              <label>Local Time:</label>
+              <span id="localTime">${new Date().toLocaleString()}</span>
+              <button onclick="copyToClipboard('localTime')" class="copy-btn">📋</button>
+            </div>
+            <div class="result-item">
+              <label>UTC:</label>
+              <span id="utcTime">${new Date().toISOString()}</span>
+              <button onclick="copyToClipboard('utcTime')" class="copy-btn">📋</button>
+            </div>
+            <div class="result-item">
+              <label>ISO 8601:</label>
+              <span id="isoTime">${new Date().toISOString()}</span>
+              <button onclick="copyToClipboard('isoTime')" class="copy-btn">📋</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="converter-section">
+          <h5>Human Readable to Unix</h5>
+          <div class="date-converter">
+            <input type="datetime-local" id="dateInput" value="${new Date().toISOString().slice(0, 16)}">
+            <button onclick="convertToUnix()" class="convert-btn">Convert</button>
+          </div>
+          <div id="dateResult" class="timestamp-results">
+            <div class="result-item">
+              <label>Unix Timestamp:</label>
+              <span id="resultTimestamp">${Math.floor(Date.now() / 1000)}</span>
+              <button onclick="copyToClipboard('resultTimestamp')" class="copy-btn">📋</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="converter-section">
+          <h5>Quick Presets</h5>
+          <div class="preset-buttons">
+            <button onclick="setPreset('now')" class="preset-btn">Now</button>
+            <button onclick="setPreset('hour')" class="preset-btn">1 Hour Ago</button>
+            <button onclick="setPreset('day')" class="preset-btn">1 Day Ago</button>
+            <button onclick="setPreset('week')" class="preset-btn">1 Week Ago</button>
+            <button onclick="setPreset('month')" class="preset-btn">1 Month Ago</button>
+            <button onclick="setPreset('year')" class="preset-btn">1 Year Ago</button>
+          </div>
+        </div>
+
+        <div class="converter-controls">
+          <button onclick="TimeLabGames.endGame()" class="game-btn secondary">Close</button>
+        </div>
+      </div>
+    `;
+
+    // Start live timestamp update
+    updateCurrentTimestamp();
+    setInterval(updateCurrentTimestamp, 1000);
+  }
+
+  function updateCurrentTimestamp() {
+    const el = document.getElementById('currentTimestamp');
+    if (el) {
+      el.textContent = Math.floor(Date.now() / 1000);
+    }
+  }
+
+  function convertFromUnix() {
+    const timestamp = document.getElementById('unixInput').value;
+    if (!timestamp) return;
+
+    const date = new Date(parseInt(timestamp) * 1000);
+    
+    document.getElementById('localTime').textContent = date.toLocaleString();
+    document.getElementById('utcTime').textContent = date.toUTCString();
+    document.getElementById('isoTime').textContent = date.toISOString();
+  }
+
+  function convertToUnix() {
+    const dateStr = document.getElementById('dateInput').value;
+    if (!dateStr) return;
+
+    const timestamp = Math.floor(new Date(dateStr).getTime() / 1000);
+    document.getElementById('resultTimestamp').textContent = timestamp;
+  }
+
+  function setPreset(type) {
+    const now = new Date();
+    let targetDate;
+
+    switch (type) {
+      case 'now':
+        targetDate = now;
+        break;
+      case 'hour':
+        targetDate = new Date(now.getTime() - 60 * 60 * 1000);
+        break;
+      case 'day':
+        targetDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case 'week':
+        targetDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'month':
+        targetDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        break;
+      case 'year':
+        targetDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        break;
+      default:
+        targetDate = now;
+    }
+
+    const timestamp = Math.floor(targetDate.getTime() / 1000);
+    document.getElementById('unixInput').value = timestamp;
+    convertFromUnix();
+  }
+
+  function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    navigator.clipboard.writeText(element.textContent).then(() => {
+      // Show brief success feedback
+      const originalText = element.textContent;
+      element.textContent = 'Copied!';
+      element.style.color = '#00d68f';
+      setTimeout(() => {
+        element.textContent = originalText;
+        element.style.color = '';
+      }, 1500);
+    }).catch(() => {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = element.textContent;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    });
+  }
+
+  // Expose functions globally
+  window.convertFromUnix = convertFromUnix;
+  window.convertToUnix = convertToUnix;
+  window.setPreset = setPreset;
+  window.copyToClipboard = copyToClipboard;
+
   // Expose to global scope
   window.TimeConverters = TimeConverters;
   window.TimeLabConversions = {
-    startConversions
+    startConversions,
+    startTimestamp
   };
 
 })();
