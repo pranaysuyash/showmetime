@@ -93,6 +93,9 @@
     // Wire up UI
     wireUI();
     
+    // Setup tool tabs
+    setupToolTabs();
+    
     // Start animation
     startAnimation();
     
@@ -1768,6 +1771,40 @@
   function startAnimation() {
     requestAnimationFrame(tick);
   }
+
+  // Setup tool tabs functionality  
+  function setupToolTabs() {
+    const toolTabs = document.querySelectorAll('.tool-tab');
+    const toolContents = document.querySelectorAll('.tool-content');
+    
+    if (toolTabs.length === 0) return; // Not in games mode
+    
+    toolTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        toolTabs.forEach(t => t.classList.remove('active'));
+        toolContents.forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        const tabId = tab.dataset.tab + 'Tab';
+        const content = document.getElementById(tabId);
+        if (content) {
+          content.classList.add('active');
+        }
+      });
+    });
+  }
+
+  // Placeholder countdown timer (to be implemented)
+  function startCountdown() {
+    alert('Countdown timer coming soon! This will let you create custom countdowns for events, deadlines, and reminders.');
+  }
+  
+  // Expose countdown function globally
+  window.TimeLabCountdown = {
+    startCountdown
+  };
 
   // Expose core functions globally for modules
   window.TimeLab = {

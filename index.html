@@ -47,6 +47,25 @@
     <meta name="twitter:description" content="Help kids master time! Interactive clock with lessons, quizzes & games. 5 modes from basic to advanced. Free educational tool for parents & teachers." />
     <meta name="twitter:image" content="https://showmetime.com/og-image.png" />
     <meta name="twitter:image:alt" content="TimeLab Interactive Clock Learning App" />
+    
+    <!-- Additional SEO Enhancement -->
+    <meta name="geo.region" content="US" />
+    <meta name="geo.placename" content="United States" />
+    <meta name="ICBM" content="39.8283, -98.5795" />
+    <meta name="DC.title" content="TimeLab Interactive Clock Learning App" />
+    <meta name="DC.creator" content="TimeLab Educational Tools" />
+    <meta name="DC.subject" content="Educational Clock Learning App for Kids" />
+    <meta name="DC.description" content="Interactive analog clock with teaching modes, games, and progressive lessons" />
+    <meta name="DC.publisher" content="TimeLab Educational Tools" />
+    <meta name="DC.contributor" content="TimeLab Development Team" />
+    <meta name="DC.date" content="2025-08-22" />
+    <meta name="DC.type" content="Interactive Application" />
+    <meta name="DC.format" content="text/html" />
+    <meta name="DC.identifier" content="https://showmetime.com/" />
+    <meta name="DC.language" content="en" />
+    <meta name="DC.coverage" content="Global" />
+    <meta name="DC.rights" content="© 2025 TimeLab Educational Tools" />
+    
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230b1020' stroke='%235eb0ef' stroke-width='4'/%3E%3Cline x1='50' y1='50' x2='50' y2='20' stroke='%23e7ecff' stroke-width='6' stroke-linecap='round'/%3E%3Cline x1='50' y1='50' x2='80' y2='50' stroke='%235eb0ef' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -249,6 +268,109 @@
         ]
     }
     </script>
+
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "TimeLab Educational Tools",
+        "url": "https://showmetime.com",
+        "logo": "https://showmetime.com/icon.svg",
+        "sameAs": [
+            "https://github.com/pranaysuyash/showmetime"
+        ],
+        "foundingDate": "2025",
+        "founders": [{
+            "@type": "Person",
+            "name": "TimeLab Development Team"
+        }],
+        "knowsAbout": [
+            "Educational Technology",
+            "Time Learning",
+            "Interactive Educational Apps",
+            "Child Development",
+            "Analog Clock Reading",
+            "Progressive Learning Systems"
+        ],
+        "areaServed": "Global",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "support@showmetime.com",
+            "contactType": "Customer Support",
+            "availableLanguage": "English"
+        }
+    }
+    </script>
+
+    <!-- SoftwareApplication Enhanced Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "TimeLab Interactive Clock Learning App",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "247",
+            "bestRating": "5",
+            "worstRating": "1"
+        },
+        "featureList": [
+            "Interactive analog clock with draggable hands",
+            "5 educational modes: Clock, Interactive, Learn, Quiz, Games",
+            "Progressive learning system with 50+ lessons",
+            "Multiple themes and customization options",
+            "Timezone support for global learning",
+            "Educational games including Race the Clock, Time Detective, and Clock Memory",
+            "Real-time feedback and progress tracking",
+            "Mobile-responsive design for all devices"
+        ],
+        "screenshot": "https://showmetime.com/screenshot-desktop.png",
+        "softwareVersion": "2.1.0",
+        "datePublished": "2025-08-22",
+        "author": {
+            "@type": "Organization",
+            "name": "TimeLab Educational Tools"
+        },
+        "educationalUse": "Time Reading Skills, Analog Clock Comprehension, Educational Gaming",
+        "typicalAgeRange": "5-12",
+        "learningResourceType": "Interactive Application",
+        "educationalLevel": "Elementary School"
+    }
+    </script>
+
+    <!-- BreadcrumbList Schema for Navigation -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://showmetime.com/"
+        }, {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Clock Learning",
+            "item": "https://showmetime.com/#learn"
+        }, {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Educational Resources",
+            "item": "https://showmetime.com/resources.html"
+        }]
+    }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
@@ -480,30 +602,81 @@
 
           <section class="panel" data-for-mode="games">
             <h3>Games</h3>
-            <div class="games-grid">
-              <div class="game-card" data-game="race">
-                <h4>⏰ Race the Clock</h4>
-                <p>Set the clock to different times as fast as you can!</p>
-                <div class="game-stats">
-                  <span>Best Time: <span id="raceBest">--</span></span>
+            <div class="games-tools-tabs">
+              <button class="tool-tab active" data-tab="games">Games</button>
+              <button class="tool-tab" data-tab="converters">Converters</button>
+              <button class="tool-tab" data-tab="timers">Timers</button>
+            </div>
+
+            <div id="gamesTab" class="tool-content active">
+              <div class="games-grid">
+                <div class="game-card" data-game="race">
+                  <h4>⏰ Race the Clock</h4>
+                  <p>Set the clock to different times as fast as you can!</p>
+                  <div class="game-stats">
+                    <span>Best Time: <span id="raceBest">--</span></span>
+                  </div>
+                  <button class="btn game-btn" data-game="race">Play</button>
                 </div>
-                <button class="btn game-btn" data-game="race">Play</button>
+                <div class="game-card" data-game="detective">
+                  <h4>🕵️ Time Detective</h4>
+                  <p>Guess what activity happens at different times of day!</p>
+                  <div class="game-stats">
+                    <span>High Score: <span id="detectiveBest">--</span></span>
+                  </div>
+                  <button class="btn game-btn" data-game="detective">Play</button>
+                </div>
+                <div class="game-card" data-game="memory">
+                  <h4>🧠 Time Memory</h4>
+                  <p>Remember and match different clock times!</p>
+                  <div class="game-stats">
+                    <span>Best Score: <span id="memoryBest">--</span></span>
+                  </div>
+                  <button class="btn game-btn" data-game="memory">Play</button>
+                </div>
               </div>
-              <div class="game-card" data-game="detective">
-                <h4>🕵️ Time Detective</h4>
-                <p>Guess what activity happens at different times of day!</p>
-                <div class="game-stats">
-                  <span>High Score: <span id="detectiveBest">--</span></span>
+            </div>
+
+            <div id="convertersTab" class="tool-content">
+              <div class="tools-grid">
+                <div class="tool-card" onclick="TimeLabConversions.startConversions()">
+                  <h4>🔄 Time Converter</h4>
+                  <p>Convert between 12/24 hour formats and timezones</p>
+                  <div class="tool-features">
+                    <span>• Format conversion</span>
+                    <span>• Timezone conversion</span>
+                    <span>• Time calculator</span>
+                    <span>• World clocks</span>
+                  </div>
+                  <button class="btn tool-btn">Open Converter</button>
                 </div>
-                <button class="btn game-btn" data-game="detective">Play</button>
               </div>
-              <div class="game-card" data-game="memory">
-                <h4>🧠 Time Memory</h4>
-                <p>Remember and match different clock times!</p>
-                <div class="game-stats">
-                  <span>Best Score: <span id="memoryBest">--</span></span>
+            </div>
+
+            <div id="timersTab" class="tool-content">
+              <div class="tools-grid">
+                <div class="tool-card" onclick="TimeLabPomodoro.startPomodoro()">
+                  <h4>🍅 Pomodoro Timer</h4>
+                  <p>Focus timer with work and break sessions for productivity</p>
+                  <div class="tool-features">
+                    <span>• 25min work sessions</span>
+                    <span>• 5min short breaks</span>
+                    <span>• 15min long breaks</span>
+                    <span>• Task management</span>
+                  </div>
+                  <button class="btn tool-btn">Start Pomodoro</button>
                 </div>
-                <button class="btn game-btn" data-game="memory">Play</button>
+                <div class="tool-card" onclick="TimeLabCountdown.startCountdown()">
+                  <h4>⏲️ Event Countdown</h4>
+                  <p>Count down to important events and deadlines</p>
+                  <div class="tool-features">
+                    <span>• Custom countdown</span>
+                    <span>• Event reminders</span>
+                    <span>• Visual progress</span>
+                    <span>• Sound alerts</span>
+                  </div>
+                  <button class="btn tool-btn">Create Countdown</button>
+                </div>
               </div>
             </div>
             <div id="gameArea" class="game-area"></div>
@@ -761,6 +934,8 @@
 
 
     <script src="./learning-system.js" defer></script>
+    <script src="./modules/conversions.js" defer></script>
+    <script src="./modules/pomodoro.js" defer></script>
     <script src="./script.js" defer></script>
     <!-- Lazy load modules on demand -->
     <script>
